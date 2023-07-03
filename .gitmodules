@@ -1,0 +1,3 @@
+[submodule "Hawk/vendor/spdlog"]
+	path = Hawk/vendor/spdlog
+	url = https://github.com/gabime/spdlog

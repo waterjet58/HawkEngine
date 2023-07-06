@@ -18,10 +18,9 @@ namespace Hawk {
 
 	void Application::Run()
 	{
-		
-
 		while (running)
 		{
+			
 			_window->Update();
 		}
 	}

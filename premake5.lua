@@ -10,6 +10,12 @@ workspace "Hawk"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+IncludedDirectories = {}
+
+IncludedDirectories["GLFW"] = "Hawk/vendor/GLFW/include"
+
+include "Hawk/vendor/GLFW"
+
 project "Hawk"
 	location "Hawk"
 	kind "StaticLib"
@@ -32,7 +38,15 @@ project "Hawk"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include"
+		"%{prj.name}/vendor/spdlog/include",
+		"%{IncludedDirectories.GLFW}"
+	}
+
+	links
+	{
+		"GLFW",
+		"opengl32.lib",
+		"dwmapi.lib"
 	}
 
 	filter "system:windows"
@@ -41,7 +55,8 @@ project "Hawk"
 		defines 
 		{
 			"HWK_PLATFORM_WINDOWS",
-			"HWK_BUILD_DLL"
+			"HWK_BUILD_DLL",
+			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"

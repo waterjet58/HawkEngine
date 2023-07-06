@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hawk/Core.h"
+#include "Hawk/Log.h"
 
 #include <string>
 #include <functional>
@@ -26,13 +27,14 @@ namespace Hawk {
 		EventCategoryMouseButton	= Bit(4)
 	};
 
+	//Macro used by The Cherno in Game engine series to setup GetStaticType/GetEventType/GetName for the Application/Key/Mouse events
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
 									virtual EventType GetEventType() const override { return GetStaticType(); }\
 									virtual const char* GetName() const override { return #type; }
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
-
-	class HAWK_API Event
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	class  Event
 	{
 		friend class EventDispatcher;
 	public:
@@ -54,6 +56,10 @@ namespace Hawk {
 	{
 		template<typename T>
 		using EventFn = std::function<bool(T&)>;
+
+	private:
+		Event& m_Event;
+
 	public:
 		EventDispatcher(Event& event)
 			: m_Event(event)
@@ -70,13 +76,8 @@ namespace Hawk {
 			}
 			return false;
 		}
-	private:
-		Event& m_Event;
+	
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, const Event& e)
-	{
-		return os << e.ToString();
-	}
 
 }

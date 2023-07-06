@@ -1,12 +1,14 @@
 #pragma once
+
 #include <memory>
 
 #include "Core.h"
 #include "spdlog/spdlog.h"
 
 
+
 namespace Hawk {
-	class HAWK_API Log
+	class  Log
 	{
 	public:
 		static void Init();

@@ -1,13 +1,17 @@
 #pragma once
 
 #ifdef HWK_PLATFORM_WINDOWS
-	#ifdef HWK_BUILD_DLL
-		#define HAWK_API __declspec(dllexport)
-	#else
-		#define HAWK_API __declspec(dllimport)
-	#endif
+	
 #else
 	#error Hawk only support Windows
 #endif
 
-#define BIT(x) (1 << x)
+#ifdef HWK_ENABLE_ASSERTS
+	#define HWK_ASSERT(x, ...) { if(!(x)) HWK_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#define HWK_CORE_ASSERT(x, ...) { if(!(x)) { HWK_CORE_ASSERT("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+#else
+	#define HWK_ASSERT(x, ...)
+	#define HWK_CORE_ASSERT(x, ...)
+#endif
+
+#define Bit(x) (1 << x)

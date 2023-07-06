@@ -1,5 +1,5 @@
 workspace "Hawk"
-	architecture "x64"
+	architecture "x86_64"
 	
 	configurations
 	{
@@ -12,11 +12,16 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "Hawk"
 	location "Hawk"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	pchheader "hwkPrecompiledHeader.h"
+	pchsource "Hawk/src/hwkPrecompiledHeader.cpp"
 
 	files
 	{
@@ -31,8 +36,6 @@ project "Hawk"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 		
 		defines 
@@ -41,26 +44,23 @@ project "Hawk"
 			"HWK_BUILD_DLL"
 		}
 
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
-		}
-
 	filter "configurations:Debug"
 		defines "HWK_DEBUG"
-		symbols "ON"
+		symbols "on"
 	filter "configurations:Release"
 		defines "HWK_RELEASE"
-		optimize "ON"
+		optimize "on"
 	filter "configurations:Dist"
 		defines "HWK_DIST"
-		optimize "ON"
+		optimize "on"
 
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -83,8 +83,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 		
 		defines 
@@ -94,10 +92,10 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "HWK_DEBUG"
-		symbols "ON"
+		symbols "on"
 	filter "configurations:Release"
 		defines "HWK_RELEASE"
-		optimize "ON"
+		optimize "on"
 	filter "configurations:Dist"
 		defines "HWK_DIST"
-		optimize "ON"
+		optimize "on"

@@ -4,6 +4,7 @@
 #include "Hawk/Log.h"
 
 #include <string>
+#include <sstream>
 #include <functional>
 
 namespace Hawk {
@@ -79,5 +80,8 @@ namespace Hawk {
 	
 	};
 
-
+	inline std::ostream& operator<<(std::ostream& os, const Event& e)
+	{
+		return os << e.ToString();
+	}
 }

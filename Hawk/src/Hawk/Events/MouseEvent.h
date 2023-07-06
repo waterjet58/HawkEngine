@@ -19,6 +19,13 @@ namespace Hawk {
 		inline float getX() const { return _mouseX; }
 		inline float getY() const { return _mouseY; }
 
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "MouseMovedEvent: " << _mouseX << ", " << _mouseY;
+			return ss.str();
+		}
+
 		EVENT_CLASS_TYPE(MouseMoved)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	};
@@ -36,6 +43,13 @@ namespace Hawk {
 
 		float getXOffset() const { return _xOffset; }
 		float getYOffset() const { return _yOffset; }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "MouseScrolledEvent: " << getXOffset() << ", " << getYOffset();
+			return ss.str();
+		}
 
 		EVENT_CLASS_TYPE(MouseScrolled)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
@@ -64,6 +78,14 @@ namespace Hawk {
 			: MouseButtonEvent(button) {}
 
 	public:
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "MouseButtonPressedEvent: " << _button;
+			return ss.str();
+		}
+
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
@@ -72,6 +94,13 @@ namespace Hawk {
 	public:
 		MouseButtonReleasedEvent(int button)
 			: MouseButtonEvent(button) {}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "MouseButtonReleasedEvent: " << _button;
+			return ss.str();
+		}
 
 		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};

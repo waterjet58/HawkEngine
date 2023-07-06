@@ -3,6 +3,7 @@
 #include "Core.h"
 #include "Window.h"
 #include "Events/Event.h"
+#include "Events/ApplicationEvent.h"
 
 namespace Hawk {
 
@@ -13,6 +14,7 @@ namespace Hawk {
 			virtual ~Application();
 
 			void Run();
+			void OnEvent(Event& e);
 	private:
 		std::unique_ptr<Window> _window;
 		bool running = true;

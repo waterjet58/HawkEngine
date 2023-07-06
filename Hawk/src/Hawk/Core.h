@@ -15,3 +15,7 @@
 #endif
 
 #define Bit(x) (1 << x)
+
+#include "Hawk/Log.h"
+
+

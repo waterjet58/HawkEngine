@@ -28,6 +28,13 @@ namespace Hawk {
 
 		bool IsRepeat() const { return _isRepeat; }
 
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyPressedEvent: " << _keyCode << " (repeat = " << _isRepeat << ")";
+			return ss.str();
+		}
+
 		EVENT_CLASS_TYPE(KeyPressed)
 	};
 
@@ -36,6 +43,13 @@ namespace Hawk {
 	public:
 		KeyReleasedEvent(int keycode)
 			: KeyEvent(keycode) {}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyReleasedEvent: " << _keyCode;
+			return ss.str();
+		}
 
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
@@ -46,7 +60,14 @@ namespace Hawk {
 		KeyTypedEvent(int keycode)
 			: KeyEvent(keycode) {}
 
-		EVENT_CLASS_TYPE(KeyTyped)
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyTypedEvent: " << _keyCode;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(KeyPressed)
 	};
 
 }

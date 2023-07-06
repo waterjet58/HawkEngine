@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include <sstream>
 
 namespace Hawk {
 
@@ -17,6 +18,13 @@ namespace Hawk {
 
 		unsigned int GetWidth() const { return _Width; }
 		unsigned int GetHeight() const { return _Height; }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "WindowResizeEvent: " << _Width << ", " << _Height;
+			return ss.str();
+		}
 
 		EVENT_CLASS_TYPE(WindowResize)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)

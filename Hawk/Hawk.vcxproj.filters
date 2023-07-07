@@ -37,6 +37,12 @@
     <ClInclude Include="src\Hawk\Events\MouseEvent.h">
       <Filter>Hawk\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hawk\Layer.h">
+      <Filter>Hawk</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\LayerStack.h">
+      <Filter>Hawk</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hawk\Log.h">
       <Filter>Hawk</Filter>
     </ClInclude>
@@ -50,6 +56,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hawk\Application.cpp">
+      <Filter>Hawk</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\Layer.cpp">
+      <Filter>Hawk</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\LayerStack.cpp">
       <Filter>Hawk</Filter>
     </ClCompile>
     <ClCompile Include="src\Hawk\Log.cpp">

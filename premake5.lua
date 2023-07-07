@@ -45,8 +45,8 @@ project "Hawk"
 	links
 	{
 		"GLFW",
-		"opengl32.lib",
 		"dwmapi.lib"
+
 	}
 
 	filter "system:windows"

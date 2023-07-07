@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Hawk/Log.h"
 
+#include "Hawk/Events/Event.h"
 #include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/Log.h"
 
@@ -21,16 +22,44 @@ namespace Hawk {
 		
 	}
 
+	void Application::PushLayer(Layer* layer)
+	{
+		_layerStack.PushLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer* overlay)
+	{
+		_layerStack.PushOverlay(overlay);
+	}
+
 	void Application::OnEvent(Event& e)
 	{
-		HWK_CORE_INFO("{0}", e.ToString());
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FUNCTION(Application::OnWindowClose));
+
+		for (auto i = _layerStack.end(); i != _layerStack.begin(); )
+		{
+			(*--i)->OnEvent(e);
+			if (e.handled)
+				break;
+		}
 	}
 
 	void Application::Run()
 	{
 		while (running)
 		{
+
+			for (Layer* layer : _layerStack)
+				layer->Update();
+
 			_window->Update();
 		}
+	}
+
+	bool Application::OnWindowClose(WindowCloseEvent& e)
+	{
+		running = false;
+		return true;
 	}
 }

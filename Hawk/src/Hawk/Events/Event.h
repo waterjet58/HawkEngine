@@ -49,8 +49,7 @@ namespace Hawk {
 			return GetCategoryFlags() & category;
 		}
 
-	protected:
-		bool m_Handled = false;
+		bool handled = false;
 	};
 
 	class EventDispatcher
@@ -59,20 +58,20 @@ namespace Hawk {
 		using EventFn = std::function<bool(T&)>;
 
 	private:
-		Event& m_Event;
+		Event& _event;
 
 	public:
 		EventDispatcher(Event& event)
-			: m_Event(event)
+			: _event(event)
 		{
 		}
 
-		template<typename T>
-		bool Dispatch(EventFn<T> func)
+		template<typename T, typename F>
+		bool Dispatch(const F& func)
 		{
-			if (m_Event.GetEventType() == T::GetStaticType())
+			if (_event.GetEventType() == T::GetStaticType())
 			{
-				m_Event.m_Handled = func(*(T*)&m_Event);
+				_event.handled |= func(static_cast<T&>(_event));
 				return true;
 			}
 			return false;

@@ -16,7 +16,6 @@ public:
 	}
 };
 
-
 class Sandbox : public Hawk::Application
 {
 public: 

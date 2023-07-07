@@ -7,6 +7,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hawk", "Hawk\Hawk.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.vcxproj", "{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vulkan", "Hawk\vendor\Vulkan\Vulkan.vcxproj", "{D6EAFCD8-C28C-27AF-AB47-3B039788AEFF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glm", "Hawk\vendor\glm\glm.vcxproj", "{6577880B-D180-887C-5AFC-9E7CC604947C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -32,6 +36,18 @@ Global
 		{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}.Dist|x64.Build.0 = Dist|x64
 		{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}.Release|x64.ActiveCfg = Release|x64
 		{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}.Release|x64.Build.0 = Release|x64
+		{D6EAFCD8-C28C-27AF-AB47-3B039788AEFF}.Debug|x64.ActiveCfg = Debug|x64
+		{D6EAFCD8-C28C-27AF-AB47-3B039788AEFF}.Debug|x64.Build.0 = Debug|x64
+		{D6EAFCD8-C28C-27AF-AB47-3B039788AEFF}.Dist|x64.ActiveCfg = Dist|x64
+		{D6EAFCD8-C28C-27AF-AB47-3B039788AEFF}.Dist|x64.Build.0 = Dist|x64
+		{D6EAFCD8-C28C-27AF-AB47-3B039788AEFF}.Release|x64.ActiveCfg = Release|x64
+		{D6EAFCD8-C28C-27AF-AB47-3B039788AEFF}.Release|x64.Build.0 = Release|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Debug|x64.ActiveCfg = Debug|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Debug|x64.Build.0 = Debug|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Dist|x64.ActiveCfg = Dist|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Dist|x64.Build.0 = Dist|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Release|x64.ActiveCfg = Release|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

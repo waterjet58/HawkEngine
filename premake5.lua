@@ -13,8 +13,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludedDirectories = {}
 
 IncludedDirectories["GLFW"] = "Hawk/vendor/GLFW/include"
+IncludedDirectories["Vulkan"] = "Hawk/vendor/Vulkan/Include"
+IncludedDirectories["glm"] = "Hawk/vendor/glm/"
 
 include "Hawk/vendor/GLFW"
+include "Hawk/vendor/Vulkan"
+include "Hawk/vendor/glm"
 
 project "Hawk"
 	location "Hawk"
@@ -39,14 +43,16 @@ project "Hawk"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludedDirectories.GLFW}"
+		"%{IncludedDirectories.GLFW}",
+		"%{IncludedDirectories.Vulkan}",
+		"%{IncludedDirectories.glm}"
 	}
 
 	links
 	{
 		"GLFW",
-		"dwmapi.lib"
-
+		"dwmapi.lib",
+		"Hawk/vendor/Vulkan/Lib/vulkan-1.lib"
 	}
 
 	filter "system:windows"

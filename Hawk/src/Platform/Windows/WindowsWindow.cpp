@@ -5,6 +5,12 @@
 #include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/Events/MouseEvent.h"
 
+#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
+#include <glm/glm.hpp>
+
 namespace Hawk {
 
 	static bool _GLFWInit = false;
@@ -17,6 +23,7 @@ namespace Hawk {
 	WindowsWindow::WindowsWindow(const WindowProperties& properties)
 	{
 		Init(properties);
+		
 	}
 
 	WindowsWindow::~WindowsWindow() 
@@ -39,12 +46,17 @@ namespace Hawk {
 			_GLFWInit = true;
 		}
 
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); //Remove OpenGL from init for GLFW
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); //Cancel resize for now TODO
+
 		_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, _data.Title.c_str(), nullptr, nullptr);
+
 		glfwMakeContextCurrent(_window);
 		glfwSetWindowUserPointer(_window, &_data);
-		SetVSync(true);
 
-		//GLFW Callbacks
+		SetVSync(true); //TODO for Vulkan
+
+		//GLFW Callbacks and Window Event setup
 
 		glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, int width, int height) 
 		{
@@ -127,11 +139,14 @@ namespace Hawk {
 			MouseMovedEvent event((float)xOffset, (float)yOffset);
 			data.EventCallback(event);
 		});
+
+
 	}
 
 	void WindowsWindow::Shutdown()
 	{
 		glfwDestroyWindow(_window);
+		glfwTerminate();
 	}
 
 	void WindowsWindow::Update()
@@ -142,12 +157,14 @@ namespace Hawk {
 
 	void WindowsWindow::SetVSync(bool state)
 	{
+		/*
 		if (state)
 			glfwSwapInterval(1);
 		else
 			glfwSwapInterval(0);
 
 		_data.VSync = state;
+		*/
 	}
 
 	bool WindowsWindow::IsVSync() const

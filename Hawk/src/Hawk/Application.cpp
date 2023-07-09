@@ -1,6 +1,4 @@
 #include "hwkPrecompiledHeader.h"
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 
 #include "Application.h"
 #include "Hawk/Log.h"
@@ -9,10 +7,6 @@
 #include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/Log.h"
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
 
 namespace Hawk {
 
@@ -24,9 +18,28 @@ namespace Hawk {
 		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
 	}
 
-	Application::~Application()
+	Application::~Application() {}
+
+	void Application::Run()
 	{
-		
+
+
+		while (running)
+		{
+
+			for (Layer* layer : _layerStack)
+				layer->Update();
+
+			_window->Update();
+		}
+
+		cleanup(); 
+
+	}
+
+	void Application::cleanup()
+	{
+
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -49,19 +62,6 @@ namespace Hawk {
 			(*--i)->OnEvent(e);
 			if (e.handled)
 				break;
-		}
-	}
-
-	void Application::Run()
-	{
-
-		while (running)
-		{
-
-			for (Layer* layer : _layerStack)
-				layer->Update();
-
-			_window->Update();
 		}
 	}
 

@@ -21,6 +21,7 @@ namespace Hawk {
 		virtual ~Application();
 
 		void Run();
+		void cleanup();
 		void OnEvent(Event& e);
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);

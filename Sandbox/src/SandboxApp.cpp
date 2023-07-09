@@ -7,7 +7,7 @@ public:
 
 	void Update() override
 	{
-		HWK_INFO("ExampleLayer::Update");
+
 	}
 
 	void OnEvent(Hawk::Event& event) override

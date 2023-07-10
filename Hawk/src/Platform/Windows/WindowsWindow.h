@@ -12,6 +12,8 @@ namespace Hawk {
 		GLFWwindow* _window;
 		virtual void Init(const WindowProperties& properties);
 		virtual void Shutdown();
+		virtual void SetupVulkan();
+		virtual void CleanupVulkan();
 
 		struct windowData {
 			std::string Title;

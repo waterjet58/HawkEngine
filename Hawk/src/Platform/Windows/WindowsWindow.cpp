@@ -1,5 +1,7 @@
 #include "hwkPrecompiledHeader.h"
 #include "WindowsWindow.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_vulkan.h"
 
 #include "Hawk/Events/KeyEvent.h"
 #include "Hawk/Events/ApplicationEvent.h"
@@ -31,6 +33,16 @@ namespace Hawk {
 		Shutdown();
 	}
 
+	void WindowsWindow::SetupVulkan()
+	{
+
+	}
+
+	void WindowsWindow::CleanupVulkan()
+	{
+
+	}
+
 	void WindowsWindow::Init(const WindowProperties& properties)
 	{
 		_data.Title = properties.Title;
@@ -49,12 +61,18 @@ namespace Hawk {
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); //Remove OpenGL from init for GLFW
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); //Cancel resize for now TODO
 
+		//Create the GLFW window
 		_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, _data.Title.c_str(), nullptr, nullptr);
 
+		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);
 		glfwSetWindowUserPointer(_window, &_data);
 
-		SetVSync(true); //TODO for Vulkan
+		//Intial setup for Vulkan
+		SetupVulkan();
+
+		//TODO for Vulkan
+		SetVSync(true); 
 
 		//GLFW Callbacks and Window Event setup
 
@@ -140,13 +158,13 @@ namespace Hawk {
 			data.EventCallback(event);
 		});
 
-
 	}
 
 	void WindowsWindow::Shutdown()
 	{
 		glfwDestroyWindow(_window);
 		glfwTerminate();
+		CleanupVulkan();
 	}
 
 	void WindowsWindow::Update()

@@ -14,7 +14,11 @@ namespace Hawk {
 
 	Application::Application()
 	{
-		_window = std::unique_ptr<Window>(Window::Create());
+		WindowProperties props;
+		props.Height = 600;
+		props.Width = 900;
+
+		_window = std::unique_ptr<Window>(Window::Create(props));
 		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
 	}
 

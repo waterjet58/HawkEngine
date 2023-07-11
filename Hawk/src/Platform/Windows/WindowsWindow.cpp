@@ -1,17 +1,12 @@
 #include "hwkPrecompiledHeader.h"
+#include "glad/glad.h"
 #include "WindowsWindow.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_vulkan.h"
 
 #include "Hawk/Events/KeyEvent.h"
 #include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/Events/MouseEvent.h"
 
-#define GLFW_INCLUDE_NONE
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#include <vulkan/vulkan.h>
-#include <glm/glm.hpp>
+
 
 namespace Hawk {
 
@@ -33,16 +28,6 @@ namespace Hawk {
 		Shutdown();
 	}
 
-	void WindowsWindow::SetupVulkan()
-	{
-
-	}
-
-	void WindowsWindow::CleanupVulkan()
-	{
-
-	}
-
 	void WindowsWindow::Init(const WindowProperties& properties)
 	{
 		_data.Title = properties.Title;
@@ -58,20 +43,17 @@ namespace Hawk {
 			_GLFWInit = true;
 		}
 
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); //Remove OpenGL from init for GLFW
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); //Cancel resize for now TODO
-
 		//Create the GLFW window
 		_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, _data.Title.c_str(), nullptr, nullptr);
 
 		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);
+
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		HWK_CORE_ASSERT(status, "Failed to Init GLAD");
+
 		glfwSetWindowUserPointer(_window, &_data);
 
-		//Intial setup for Vulkan
-		SetupVulkan();
-
-		//TODO for Vulkan
 		SetVSync(true); 
 
 		//GLFW Callbacks and Window Event setup
@@ -121,6 +103,13 @@ namespace Hawk {
 			}
 		});
 
+		glfwSetCharCallback(_window, [](GLFWwindow* window, unsigned int keycode)
+		{
+			windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
+			KeyTypedEvent event(keycode);
+			data.EventCallback(event);
+		});
+
 		glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) 
 		{
 			windowData& data = *(windowData*)glfwGetWindowUserPointer(window);
@@ -164,25 +153,23 @@ namespace Hawk {
 	{
 		glfwDestroyWindow(_window);
 		glfwTerminate();
-		CleanupVulkan();
 	}
 
 	void WindowsWindow::Update()
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(_window);
+
 	}
 
 	void WindowsWindow::SetVSync(bool state)
 	{
-		/*
 		if (state)
 			glfwSwapInterval(1);
 		else
 			glfwSwapInterval(0);
 
 		_data.VSync = state;
-		*/
 	}
 
 	bool WindowsWindow::IsVSync() const

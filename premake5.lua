@@ -13,14 +13,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludedDirectories = {}
 
 IncludedDirectories["GLFW"] = "Hawk/vendor/GLFW/include"
-IncludedDirectories["Vulkan"] = "Hawk/vendor/Vulkan/Include"
-IncludedDirectories["glm"] = "Hawk/vendor/glm/"
-IncludedDirectories["imgui"] = "Hawk/vendor/imgui/"
+IncludedDirectories["imgui"] = "Hawk/vendor/imgui"
+IncludedDirectories["glad"] = "Hawk/vendor/glad/include"
 
 include "Hawk/vendor/GLFW"
-include "Hawk/vendor/Vulkan"
-include "Hawk/vendor/glm"
 include "Hawk/vendor/imgui"
+include "Hawk/vendor/glad"
 
 project "Hawk"
 	location "Hawk"
@@ -46,16 +44,15 @@ project "Hawk"
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludedDirectories.GLFW}",
-		"%{IncludedDirectories.Vulkan}",
-		"%{IncludedDirectories.glm}",
-		"%{IncludedDirectories.imgui}"
+		"%{IncludedDirectories.imgui}",
+		"%{IncludedDirectories.glad}"
 	}
 
 	links
 	{
 		"GLFW",
 		"dwmapi.lib",
-		"Hawk/vendor/Vulkan/Lib/vulkan-1.lib",
+		"glad",
 		"imgui"
 	}
 
@@ -66,7 +63,8 @@ project "Hawk"
 		{
 			"HWK_PLATFORM_WINDOWS",
 			"HWK_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE",
+			"_CRT_SECURE_NO_WARNINGS"
 		}
 
 	filter "configurations:Debug"

@@ -12,8 +12,6 @@ namespace Hawk {
 		GLFWwindow* _window;
 		virtual void Init(const WindowProperties& properties);
 		virtual void Shutdown();
-		virtual void SetupVulkan();
-		virtual void CleanupVulkan();
 
 		struct windowData {
 			std::string Title;
@@ -37,6 +35,7 @@ namespace Hawk {
 		inline void SetEventCallback( const EventCallbackFunction& callback) override { _data.EventCallback = callback; }
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
+		virtual void* GetNativeWindow() const { return _window; }
 	};
 
 }

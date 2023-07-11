@@ -1,22 +1,23 @@
 #include "hwkPrecompiledHeader.h"
-
 #include "Application.h"
-#include "Hawk/Log.h"
-
 #include "Hawk/Events/Event.h"
 #include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/Log.h"
-
 
 namespace Hawk {
 
 #define BIND_EVENT_FUNCTION(x) std::bind(&x, this, std::placeholders::_1)
 
+	Application* Application::s_Instance = nullptr;
+
 	Application::Application()
 	{
+		HWK_CORE_ASSERT(!s_Instance, "Application already exists!");
+		s_Instance = this;
+
 		WindowProperties props;
-		props.Height = 600;
-		props.Width = 900;
+		props.Height = 980;
+		props.Width = 1280;
 
 		_window = std::unique_ptr<Window>(Window::Create(props));
 		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
@@ -49,11 +50,13 @@ namespace Hawk {
 	void Application::PushLayer(Layer* layer)
 	{
 		_layerStack.PushLayer(layer);
+		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* overlay)
 	{
 		_layerStack.PushOverlay(overlay);
+		overlay->OnAttach();
 	}
 
 	void Application::OnEvent(Event& e)

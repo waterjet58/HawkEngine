@@ -67,7 +67,7 @@ namespace Hawk {
 			return ss.str();
 		}
 
-		EVENT_CLASS_TYPE(KeyPressed)
+		EVENT_CLASS_TYPE(KeyTyped)
 	};
 
 }

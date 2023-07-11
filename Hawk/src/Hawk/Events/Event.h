@@ -14,7 +14,7 @@ namespace Hawk {
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLoseFocuse, WindowMoved,
 		ApplicationTick, ApplicationUpdate, ApplicationRender,
-		KeyPressed, KeyReleased,
+		KeyPressed, KeyReleased, KeyTyped,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 

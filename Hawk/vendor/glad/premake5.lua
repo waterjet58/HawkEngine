@@ -1,22 +1,22 @@
-project "Vulkan"
+project "glad"
 	kind "StaticLib"
 	language "C"
-	staticruntime "off"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
-		"%{prj.name}/vendor/Vulkan/Include/**.h",
-		"%{prj.name}/vendor/Vulkan/Include/**.cpp"
+		"include/glad/glad.h",
+		"include/KHR/khrplatform.h",
+		"src/glad.c"
 	}
 
 	includedirs
 	{
-		"Include"
+		"include"
 	}
-
 
 	filter "configurations:Debug"
 		runtime "Debug"

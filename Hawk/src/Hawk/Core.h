@@ -16,6 +16,8 @@
 
 #define Bit(x) (1 << x)
 
+#define HWK_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
 #include "Hawk/Log.h"
 
 

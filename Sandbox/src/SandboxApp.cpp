@@ -7,7 +7,8 @@ public:
 
 	void Update() override
 	{
-
+		//if (Hawk::Input::IsKeyPressed())
+			//HWK_INFO("W is pressed");
 	}
 
 	void OnEvent(Hawk::Event& event) override

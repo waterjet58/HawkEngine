@@ -5,6 +5,9 @@
 #include "Hawk/Log.h"
 #include "Hawk/Layer.h"
 #include "Hawk/ImGUILayer.h"
+#include "Hawk/Input.h"
+#include "Hawk/MouseCodes.h"
+#include "Hawk/KeyCodes.h"
 
 // --Entry Point--
 #include "Hawk/EntryPoint.h"

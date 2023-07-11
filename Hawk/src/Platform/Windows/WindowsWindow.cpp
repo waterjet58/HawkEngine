@@ -159,7 +159,6 @@ namespace Hawk {
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(_window);
-
 	}
 
 	void WindowsWindow::SetVSync(bool state)

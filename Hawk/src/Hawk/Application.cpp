@@ -4,6 +4,8 @@
 #include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/Log.h"
 
+#include "glad/glad.h"
+
 namespace Hawk {
 
 #define BIND_EVENT_FUNCTION(x) std::bind(&x, this, std::placeholders::_1)
@@ -28,9 +30,10 @@ namespace Hawk {
 	void Application::Run()
 	{
 
-
 		while (running)
 		{
+			glClearColor(0, 0, 0, 0);
+			glClear(GL_COLOR_BUFFER_BIT);
 
 			for (Layer* layer : _layerStack)
 				layer->Update();

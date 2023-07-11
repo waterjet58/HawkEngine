@@ -5,6 +5,7 @@
 #include "Hawk/Log.h"
 
 #include "glad/glad.h"
+#include "Input.h"
 
 namespace Hawk {
 
@@ -37,6 +38,9 @@ namespace Hawk {
 
 			for (Layer* layer : _layerStack)
 				layer->Update();
+
+			auto [x, y] = Input::GetMousePos();
+			HWK_CORE_TRACE("Mouse Pos: {0}, {1}", x, y);
 
 			_window->Update();
 		}

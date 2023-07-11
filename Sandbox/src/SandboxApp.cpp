@@ -12,7 +12,7 @@ public:
 
 	void OnEvent(Hawk::Event& event) override
 	{
-		HWK_TRACE("{0}", event.ToString());
+		
 	}
 };
 

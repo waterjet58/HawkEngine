@@ -152,11 +152,13 @@
     <ClInclude Include="src\Hawk\Events\KeyEvent.h" />
     <ClInclude Include="src\Hawk\Events\MouseEvent.h" />
     <ClInclude Include="src\Hawk\ImGUILayer.h" />
+    <ClInclude Include="src\Hawk\Input.h" />
     <ClInclude Include="src\Hawk\Layer.h" />
     <ClInclude Include="src\Hawk\LayerStack.h" />
     <ClInclude Include="src\Hawk\Log.h" />
     <ClInclude Include="src\Hawk\Window.h" />
     <ClInclude Include="src\Platform\OpenGL\imguiOpenGLRenderer.h" />
+    <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\hwkPrecompiledHeader.h" />
   </ItemGroup>
@@ -167,6 +169,7 @@
     <ClCompile Include="src\Hawk\LayerStack.cpp" />
     <ClCompile Include="src\Hawk\Log.cpp" />
     <ClCompile Include="src\Platform\OpenGL\imguiOpenGLRenderer.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\hwkPrecompiledHeader.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

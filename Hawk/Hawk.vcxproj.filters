@@ -86,5 +86,6 @@
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\hwkPrecompiledHeader.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
   </ItemGroup>
 </Project>

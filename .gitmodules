@@ -7,3 +7,6 @@
 [submodule "Hawk/vendor/glm"]
 	path = Hawk/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "Hawk/vendor/imgui"]
+	path = Hawk/vendor/imgui
+	url = https://github.com/ocornut/imgui

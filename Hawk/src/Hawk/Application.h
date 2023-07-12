@@ -5,6 +5,7 @@
 #include "Events/Event.h"
 #include "Hawk/LayerStack.h"
 #include "Events/ApplicationEvent.h"
+#include "Hawk/ImGui/ImGUILayer.h"
 
 namespace Hawk {
 
@@ -12,6 +13,7 @@ namespace Hawk {
 	{
 	private:
 		std::unique_ptr<Window> _window;
+		ImGUILayer* _imGuiLayer;
 		bool running = true;
 		LayerStack _layerStack;
 		static Application* s_Instance;

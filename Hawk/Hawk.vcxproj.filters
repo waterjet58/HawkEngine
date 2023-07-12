@@ -7,11 +7,11 @@
     <Filter Include="Hawk\Events">
       <UniqueIdentifier>{14ED4FA6-80A2-C89B-0997-C272754BBF9F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Hawk\ImGui">
+      <UniqueIdentifier>{5A5007EE-4608-493B-AF0F-22979BE6E32B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Platform\OpenGL">
-      <UniqueIdentifier>{1E7D2C1D-8A08-9AE1-9319-1DD6FF23F6E1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Platform\Windows">
       <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
@@ -40,7 +40,13 @@
     <ClInclude Include="src\Hawk\Events\MouseEvent.h">
       <Filter>Hawk\Events</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hawk\ImGUILayer.h">
+    <ClInclude Include="src\Hawk\ImGui\ImGUILayer.h">
+      <Filter>Hawk\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Input.h">
+      <Filter>Hawk</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\KeyCodes.h">
       <Filter>Hawk</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\Layer.h">
@@ -52,11 +58,14 @@
     <ClInclude Include="src\Hawk\Log.h">
       <Filter>Hawk</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hawk\MouseCodes.h">
+      <Filter>Hawk</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hawk\Window.h">
       <Filter>Hawk</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\imguiOpenGLRenderer.h">
-      <Filter>Platform\OpenGL</Filter>
+    <ClInclude Include="src\Platform\Windows\WindowsInput.h">
+      <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>Platform\Windows</Filter>
@@ -67,8 +76,11 @@
     <ClCompile Include="src\Hawk\Application.cpp">
       <Filter>Hawk</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hawk\ImGUILayer.cpp">
-      <Filter>Hawk</Filter>
+    <ClCompile Include="src\Hawk\ImGui\ImGUIBuild.cpp">
+      <Filter>Hawk\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\ImGui\ImGUILayer.cpp">
+      <Filter>Hawk\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Hawk\Layer.cpp">
       <Filter>Hawk</Filter>
@@ -79,8 +91,8 @@
     <ClCompile Include="src\Hawk\Log.cpp">
       <Filter>Hawk</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\imguiOpenGLRenderer.cpp">
-      <Filter>Platform\OpenGL</Filter>
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
+      <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>Platform\Windows</Filter>

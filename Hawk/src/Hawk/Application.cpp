@@ -3,9 +3,10 @@
 #include "Hawk/Events/Event.h"
 #include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/Log.h"
-
+//#include "ImGui/ImGUILayer.h"
 #include "glad/glad.h"
 #include "Input.h"
+
 
 namespace Hawk {
 
@@ -24,6 +25,9 @@ namespace Hawk {
 
 		_window = std::unique_ptr<Window>(Window::Create(props));
 		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
+
+		_imGuiLayer = new ImGUILayer();
+		PushOverlay(_imGuiLayer);
 	}
 
 	Application::~Application() {}
@@ -39,9 +43,12 @@ namespace Hawk {
 			for (Layer* layer : _layerStack)
 				layer->Update();
 
-			auto [x, y] = Input::GetMousePos();
-			HWK_CORE_TRACE("Mouse Pos: {0}, {1}", x, y);
+			_imGuiLayer->Begin();
+			for (Layer* layer : _layerStack)
+				layer->OnImGuiRender();
+			_imGuiLayer->End();
 
+			
 			_window->Update();
 		}
 

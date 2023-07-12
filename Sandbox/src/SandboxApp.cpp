@@ -1,5 +1,5 @@
 #include <Hawk.h>
-
+#include "imgui/imgui.h"
 class ExampleLayer : public Hawk::Layer
 {
 public:
@@ -7,13 +7,19 @@ public:
 
 	void Update() override
 	{
-		//if (Hawk::Input::IsKeyPressed())
-			//HWK_INFO("W is pressed");
+
 	}
 
 	void OnEvent(Hawk::Event& event) override
 	{
 		
+	}
+
+	virtual void OnImGuiRender() override
+	{
+		ImGui::Begin("Test");
+		ImGui::Text("Hello World");
+		ImGui::End();
 	}
 };
 
@@ -23,7 +29,6 @@ public:
 	Sandbox()
 	{
 		PushLayer(new ExampleLayer());
-		PushOverlay(new Hawk::ImGUILayer());
 	}
 
 	~Sandbox()

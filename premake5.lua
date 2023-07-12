@@ -17,8 +17,8 @@ IncludedDirectories["imgui"] = "Hawk/vendor/imgui"
 IncludedDirectories["glad"] = "Hawk/vendor/glad/include"
 
 include "Hawk/vendor/GLFW"
-include "Hawk/vendor/imgui"
 include "Hawk/vendor/glad"
+include "Hawk/vendor/imgui"
 
 project "Hawk"
 	location "Hawk"
@@ -63,8 +63,7 @@ project "Hawk"
 		{
 			"HWK_PLATFORM_WINDOWS",
 			"HWK_BUILD_DLL",
-			"GLFW_INCLUDE_NONE",
-			"_CRT_SECURE_NO_WARNINGS"
+			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"
@@ -97,7 +96,8 @@ project "Sandbox"
 	includedirs
 	{
 		"Hawk/vendor/spdlog/include",
-		"Hawk/src"
+		"Hawk/src",
+		"Hawk/vendor"
 	}
 
 	links

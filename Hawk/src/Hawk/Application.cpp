@@ -4,8 +4,9 @@
 #include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/Log.h"
 //#include "ImGui/ImGUILayer.h"
-#include "glad/glad.h"
+//#include "glad/glad.h"
 #include "Input.h"
+#include <GLFW/glfw3.h>
 
 
 namespace Hawk {
@@ -26,6 +27,13 @@ namespace Hawk {
 		_window = std::unique_ptr<Window>(Window::Create(props));
 		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
 
+		_vkInstance = std::unique_ptr<VulkanInstance>(VulkanInstance::Create());
+
+		uint32_t extensions_count = 0;
+		const char** extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
+
+		_vkInstance->initVulkan(extensions, extensions_count);
+
 		_imGuiLayer = new ImGUILayer();
 		PushOverlay(_imGuiLayer);
 	}
@@ -37,18 +45,17 @@ namespace Hawk {
 
 		while (running)
 		{
-			glClearColor(0, 0, 0, 0);
-			glClear(GL_COLOR_BUFFER_BIT);
+			/*glClearColor(0, 0, 0, 0);
+			glClear(GL_COLOR_BUFFER_BIT);*/
 
 			for (Layer* layer : _layerStack)
 				layer->Update();
 
-			_imGuiLayer->Begin();
+			/*_imGuiLayer->Begin();
 			for (Layer* layer : _layerStack)
 				layer->OnImGuiRender();
-			_imGuiLayer->End();
+			_imGuiLayer->End();*/
 
-			
 			_window->Update();
 		}
 
@@ -58,7 +65,10 @@ namespace Hawk {
 
 	void Application::cleanup()
 	{
+		for (auto& layer : _layerStack)
+			layer->OnDetach();
 
+		
 	}
 
 	void Application::PushLayer(Layer* layer)

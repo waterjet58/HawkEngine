@@ -8,16 +8,26 @@ workspace "Hawk"
 		"Dist"
 	}
 
+
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+VULKAN_SDK = os.getenv("VULKAN_SDK")
+
 
 IncludedDirectories = {}
 
+IncludedDirectories["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 IncludedDirectories["GLFW"] = "Hawk/vendor/GLFW/include"
 IncludedDirectories["imgui"] = "Hawk/vendor/imgui"
-IncludedDirectories["glad"] = "Hawk/vendor/glad/include"
+IncludedDirectories["glm"] = "VulkanProject/vendor/glm"
+
+LibraryDir = {}
+LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
+
+Library = {}
+Library["Vulkan"] = "%{LibraryDir.VulkanSDK}/vulkan-1.lib"
 
 include "Hawk/vendor/GLFW"
-include "Hawk/vendor/glad"
 include "Hawk/vendor/imgui"
 
 project "Hawk"
@@ -25,7 +35,7 @@ project "Hawk"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -37,6 +47,8 @@ project "Hawk"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
 
 	includedirs
@@ -45,26 +57,34 @@ project "Hawk"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludedDirectories.GLFW}",
 		"%{IncludedDirectories.imgui}",
-		"%{IncludedDirectories.glad}"
+		"%{IncludedDirectories.VulkanSDK}"
+	}
+
+	libdirs
+	{
+		"{LibraryDir.VulkanSDK}"
 	}
 
 	links
 	{
 		"GLFW",
-		"dwmapi.lib",
-		"glad",
-		"imgui"
+		"imgui",
+		"%{Library.Vulkan}"
+	}
+
+	defines 
+	{
+		"GLFW_INCLUDE_NONE"
 	}
 
 	filter "system:windows"
 		systemversion "latest"
 		
-		defines 
+		defines
 		{
-			"HWK_PLATFORM_WINDOWS",
-			"HWK_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
+			"HWK_PLATFORM_WINDOWS"
 		}
+
 
 	filter "configurations:Debug"
 		defines "HWK_DEBUG"
@@ -82,7 +102,7 @@ project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -107,8 +127,8 @@ project "Sandbox"
 
 	filter "system:windows"
 		systemversion "latest"
-		
-		defines 
+
+		defines
 		{
 			"HWK_PLATFORM_WINDOWS"
 		}

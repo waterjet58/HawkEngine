@@ -4,10 +4,13 @@
 #include "ImGUILayer.h"
 
 #include "Hawk/Application.h"
-#include "backends/imgui_impl_opengl3.h"
+//#include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
-//Temp
-#include "GLFW/glfw3.h"
+#include "backends/imgui_impl_vulkan.h"
+
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
 
 namespace Hawk {
 	
@@ -17,7 +20,7 @@ namespace Hawk {
 
 	void ImGUILayer::Begin()
 	{
-		ImGui_ImplOpenGL3_NewFrame();
+		//ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 	}
@@ -30,7 +33,7 @@ namespace Hawk {
 
 		// Rendering
 		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
@@ -71,14 +74,18 @@ namespace Hawk {
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
 		// Setup Platform/Renderer bindings
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init("#version 410");
+		ImGui_ImplGlfw_InitForVulkan(window, true);
+		//ImGui_ImplVulkanH_CreateOrResizeWindow();
+		//ImGui_ImplGlfw_InitForOpenGL(window, true);
+		//ImGui_ImplOpenGL3_Init("#version 410");
+		
 
 	}
 
 	void ImGUILayer::OnDetach()
 	{
-		ImGui_ImplOpenGL3_Shutdown();
+		//ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 	}

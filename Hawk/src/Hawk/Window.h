@@ -22,7 +22,7 @@ namespace Hawk {
 
 	};
 
-	class  Window
+	class Window
 	{
 	public:
 		using EventCallbackFunction = std::function<void(Event&)>;

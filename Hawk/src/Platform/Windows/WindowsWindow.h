@@ -4,21 +4,23 @@
 
 #include "GLFW/glfw3.h"
 
+
 namespace Hawk {
 
 	class WindowsWindow : public Window
 	{
 	private:
 		GLFWwindow* _window;
+		
 		virtual void Init(const WindowProperties& properties);
 		virtual void Shutdown();
 
 		struct windowData {
-			std::string Title;
-			unsigned int Width, Height;
-			bool VSync;
+			std::string Title = "";
+			unsigned int Width = 600, Height = 400;
+			bool VSync = true;
 
-			EventCallbackFunction EventCallback;
+			EventCallbackFunction EventCallback = NULL;
 		};
 
 		windowData _data;

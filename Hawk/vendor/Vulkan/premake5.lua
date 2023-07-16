@@ -9,7 +9,8 @@ project "Vulkan"
 	files
 	{
 		"%{prj.name}/vendor/Vulkan/Include/**.h",
-		"%{prj.name}/vendor/Vulkan/Include/**.cpp"
+		"%{prj.name}/vendor/Vulkan/Include/**.cpp",
+		"%{prj.name}/vendor/Vulkan/Lib/vulkan-1.lib"
 	}
 
 	includedirs

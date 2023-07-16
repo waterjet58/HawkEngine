@@ -1,5 +1,4 @@
 #include "hwkPrecompiledHeader.h"
-#include "glad/glad.h"
 #include "WindowsWindow.h"
 
 #include "Hawk/Events/KeyEvent.h"
@@ -7,10 +6,10 @@
 #include "Hawk/Events/MouseEvent.h"
 
 
-
 namespace Hawk {
 
 	static bool _GLFWInit = false;
+
 
 	Window* Window::Create(const WindowProperties& properties)
 	{
@@ -20,7 +19,6 @@ namespace Hawk {
 	WindowsWindow::WindowsWindow(const WindowProperties& properties)
 	{
 		Init(properties);
-		
 	}
 
 	WindowsWindow::~WindowsWindow() 
@@ -33,7 +31,7 @@ namespace Hawk {
 		_data.Title = properties.Title;
 		_data.Width = properties.Width;
 		_data.Height = properties.Height;
-
+		
 		HWK_CORE_INFO("Creating Window {0} ({1}, {2})", properties.Title, properties.Width, properties.Height);
 
 		if (!_GLFWInit)
@@ -45,11 +43,10 @@ namespace Hawk {
 
 		//Create the GLFW window
 		_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, _data.Title.c_str(), nullptr, nullptr);
-
+		
 		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);
-
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		
 		HWK_CORE_ASSERT(status, "Failed to Init GLAD");
 
 		glfwSetWindowUserPointer(_window, &_data);
@@ -151,6 +148,7 @@ namespace Hawk {
 
 	void WindowsWindow::Shutdown()
 	{
+
 		glfwDestroyWindow(_window);
 		glfwTerminate();
 	}

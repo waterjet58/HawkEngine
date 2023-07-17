@@ -62,14 +62,14 @@ project "Hawk"
 
 	libdirs
 	{
-		"{LibraryDir.VulkanSDK}"
+		"%{LibraryDir.VulkanSDK}"
 	}
 
 	links
 	{
 		"GLFW",
 		"imgui",
-		"%{Library.Vulkan}"
+		"vulkan-1.lib"
 	}
 
 	defines 
@@ -117,12 +117,21 @@ project "Sandbox"
 	{
 		"Hawk/vendor/spdlog/include",
 		"Hawk/src",
-		"Hawk/vendor"
+		"Hawk/vendor",
+		"%{IncludedDirectories.GLFW}",
+		"%{IncludedDirectories.imgui}",
+		"%{IncludedDirectories.VulkanSDK}"
+	}
+
+	libdirs
+	{
+		"%{LibraryDir.VulkanSDK}"
 	}
 
 	links
 	{
-		"Hawk"
+		"Hawk",
+		"vulkan-1.lib"
 	}
 
 	filter "system:windows"

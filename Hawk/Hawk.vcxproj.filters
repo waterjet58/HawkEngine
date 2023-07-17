@@ -13,11 +13,14 @@
     <Filter Include="src\Hawk\ImGui">
       <UniqueIdentifier>{11ED0D25-FDBA-012B-E64E-7251D2BBDD8F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Hawk\Vulkan">
-      <UniqueIdentifier>{4782C3E5-B30D-31AA-BC1E-B49E28298DAA}</UniqueIdentifier>
+    <Filter Include="src\Hawk\Renderer">
+      <UniqueIdentifier>{2D0630E8-991C-2E7E-E293-B99F4EE9FE05}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform\Vulkan">
+      <UniqueIdentifier>{81084748-ED69-2456-76D7-6A08E2375B15}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform\Windows">
       <UniqueIdentifier>{5B054582-4794-CE4B-F0B2-E246DC20DFF1}</UniqueIdentifier>
@@ -90,11 +93,14 @@
     <ClInclude Include="src\Hawk\MouseCodes.h">
       <Filter>src\Hawk</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hawk\Vulkan\VulkanInstance.h">
-      <Filter>src\Hawk\Vulkan</Filter>
+    <ClInclude Include="src\Hawk\Renderer\GraphicsContext.h">
+      <Filter>src\Hawk\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\Window.h">
       <Filter>src\Hawk</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Vulkan\VulkanContext.h">
+      <Filter>src\Platform\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsInput.h">
       <Filter>src\Platform\Windows</Filter>
@@ -1373,8 +1379,8 @@
     <ClCompile Include="src\Hawk\Log.cpp">
       <Filter>src\Hawk</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hawk\Vulkan\VulkanInstance.cpp">
-      <Filter>src\Hawk\Vulkan</Filter>
+    <ClCompile Include="src\Platform\Vulkan\VulkanContext.cpp">
+      <Filter>src\Platform\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
       <Filter>src\Platform\Windows</Filter>

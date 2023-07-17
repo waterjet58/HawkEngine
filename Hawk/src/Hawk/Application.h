@@ -6,7 +6,7 @@
 #include "Hawk/LayerStack.h"
 #include "Events/ApplicationEvent.h"
 #include "Hawk/ImGui/ImGUILayer.h"
-#include "Vulkan/VulkanInstance.h"
+#include "Renderer/GraphicsContext.h"
 
 namespace Hawk {
 
@@ -14,8 +14,8 @@ namespace Hawk {
 	{
 	private:
 		std::unique_ptr<Window> _window;
-		std::unique_ptr<VulkanInstance> _vkInstance;
 		ImGUILayer* _imGuiLayer;
+		VulkanContext* _context;
 		bool running = true;
 		LayerStack _layerStack;
 		static Application* s_Instance;
@@ -31,7 +31,7 @@ namespace Hawk {
 		void PushOverlay(Layer* overlay);
 		static Application& Get() { return *s_Instance; }
 		Window& GetWindow() { return *_window; }
-
+		GraphicsContext& GetGraphicsContext() { return *_context; }
 	};
 
 	//To be defined in client

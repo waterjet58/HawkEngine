@@ -1,9 +1,8 @@
 #pragma once
 
 #include "Hawk/Window.h"
-
+#include "Hawk/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
-
 
 namespace Hawk {
 
@@ -11,7 +10,7 @@ namespace Hawk {
 	{
 	private:
 		GLFWwindow* _window;
-		
+		GraphicsContext* _context;
 		virtual void Init(const WindowProperties& properties);
 		virtual void Shutdown();
 

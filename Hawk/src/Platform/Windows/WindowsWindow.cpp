@@ -4,12 +4,12 @@
 #include "Hawk/Events/KeyEvent.h"
 #include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/Events/MouseEvent.h"
-
+#include "Hawk/Renderer/GraphicsContext.h"
+#include "Platform/Vulkan/VulkanContext.h"
 
 namespace Hawk {
 
 	static bool _GLFWInit = false;
-
 
 	Window* Window::Create(const WindowProperties& properties)
 	{
@@ -34,6 +34,8 @@ namespace Hawk {
 		
 		HWK_CORE_INFO("Creating Window {0} ({1}, {2})", properties.Title, properties.Width, properties.Height);
 
+		
+
 		if (!_GLFWInit)
 		{
 			int success = glfwInit();
@@ -41,9 +43,10 @@ namespace Hawk {
 			_GLFWInit = true;
 		}
 
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		//Create the GLFW window
 		_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, _data.Title.c_str(), nullptr, nullptr);
-		
+
 		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);
 		
@@ -148,7 +151,6 @@ namespace Hawk {
 
 	void WindowsWindow::Shutdown()
 	{
-
 		glfwDestroyWindow(_window);
 		glfwTerminate();
 	}
@@ -156,7 +158,7 @@ namespace Hawk {
 	void WindowsWindow::Update()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(_window);
+		//glfwSwapBuffers(_window);
 	}
 
 	void WindowsWindow::SetVSync(bool state)

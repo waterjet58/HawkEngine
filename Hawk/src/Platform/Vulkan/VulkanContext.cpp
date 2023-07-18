@@ -303,7 +303,7 @@ namespace Hawk {
 #ifdef IMGUI_UNLIMITED_FRAME_RATE
 		VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_FIFO_KHR };
 #else
-		VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR };
+		VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_MAILBOX_KHR };
 #endif
 		wd->PresentMode = ImGui_ImplVulkanH_SelectPresentMode(_PhysicalDevice, wd->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
 		//printf("[vulkan] Selected PresentMode = %d\n", wd->PresentMode);
@@ -320,11 +320,13 @@ namespace Hawk {
 		VkSemaphore image_acquired_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
 		VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
 		err = vkAcquireNextImageKHR(_Device, wd->Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &wd->FrameIndex);
+
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
 			_SwapChainRebuild = true;
 			return;
 		}
+
 		check_vk_result(err);
 
 		_CurrentFrameIndex = (_CurrentFrameIndex + 1) % wd->ImageCount;
@@ -344,10 +346,12 @@ namespace Hawk {
 				func();
 			_ResourceFreeQueue[_CurrentFrameIndex].clear();
 		}
+
 		{
 			// Free command buffers allocated by Application::GetCommandBuffer
 			// These use g_MainWindowData.FrameIndex and not s_CurrentFrameIndex because they're tied to the swapchain image index
 			auto& allocatedCommandBuffers = _AllocatedCommandBuffers[wd->FrameIndex];
+
 			if (allocatedCommandBuffers.size() > 0)
 			{
 				vkFreeCommandBuffers(_Device, fd->CommandPool, (uint32_t)allocatedCommandBuffers.size(), allocatedCommandBuffers.data());
@@ -362,6 +366,7 @@ namespace Hawk {
 			err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
 			check_vk_result(err);
 		}
+
 		{
 			VkRenderPassBeginInfo info = {};
 			info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -402,7 +407,9 @@ namespace Hawk {
 	{
 		if (_SwapChainRebuild)
 			return;
+
 		VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
+
 		VkPresentInfoKHR info = {};
 		info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		info.waitSemaphoreCount = 1;
@@ -411,18 +418,20 @@ namespace Hawk {
 		info.pSwapchains = &wd->Swapchain;
 		info.pImageIndices = &wd->FrameIndex;
 		VkResult err = vkQueuePresentKHR(_Queue, &info);
+
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
 			_SwapChainRebuild = true;
 			return;
 		}
+
 		check_vk_result(err);
+
 		wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of semaphores
 	}
 
 	void VulkanContext::Cleanup()
 	{
-
 		vkDestroyDescriptorPool(_Device, _DescriptorPool, _Allocator);
 
 #ifdef IMGUI_VULKAN_DEBUG_REPORT

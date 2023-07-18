@@ -20,6 +20,8 @@ namespace Hawk {
 		LayerStack _layerStack;
 		static Application* s_Instance;
 		bool OnWindowClose(WindowCloseEvent& event);
+
+		unsigned int _VertexArray, _VertexBuffer, _IndexBuffer;
 	public:
 		Application();
 		virtual ~Application();

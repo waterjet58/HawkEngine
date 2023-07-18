@@ -38,6 +38,14 @@ namespace Hawk {
 		_imGuiLayer = new ImGUILayer();
 		
 		PushOverlay(_imGuiLayer);
+
+		float vetices[3 * 3] = {
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.0f,  0.5f, 0.0f,
+		};
+
+
 	}
 
 	Application::~Application() {}
@@ -46,7 +54,7 @@ namespace Hawk {
 	{
 		
 		ImGui_ImplVulkanH_Window* wd = _context->GetWindowData();
-		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 0.2f);
 		ImGuiIO& io = ImGui::GetIO();
 
 		while (running)
@@ -67,6 +75,7 @@ namespace Hawk {
 			wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
 			wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
 			wd->ClearValue.color.float32[3] = clear_color.w;
+			
 			if (!main_is_minimized)
 				_context->FrameRender(wd, main_draw_data);
 

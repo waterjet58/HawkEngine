@@ -20,8 +20,8 @@ namespace Hawk {
 		virtual void OnDetach() override;
 		virtual void OnImGuiRender() override;
 
-		void Begin(VulkanContext* _context);
-		void End(VulkanContext* _context);
+		void Begin();
+		void End();
 	};
 }
 

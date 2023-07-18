@@ -2,6 +2,7 @@
 
 #include "Hawk/Core.h"
 #include "Hawk/Events/Event.h"
+#include "vulkan/vulkan.h"
 
 namespace Hawk {
 
@@ -39,6 +40,7 @@ namespace Hawk {
 		virtual bool IsVSync() const = 0;
 
 		virtual void* GetNativeWindow() const = 0;
+		virtual VkRenderPass GetRenderPass();
 
 		static Window* Create(const WindowProperties& properties = WindowProperties());
 	};

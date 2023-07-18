@@ -29,15 +29,9 @@ namespace Hawk {
 		_window = std::unique_ptr<Window>(Window::Create(props));
 		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
 
-		uint32_t extensions_count = 0;
-		const char** extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
+		//_imGuiLayer = new ImGUILayer();
 		
-		_context = new VulkanContext(static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow()));
-		_context->Init();
-
-		_imGuiLayer = new ImGUILayer();
-		
-		PushOverlay(_imGuiLayer);
+		//PushOverlay(_imGuiLayer);
 
 		float vetices[3 * 3] = {
 			-0.5f, -0.5f, 0.0f,
@@ -52,10 +46,6 @@ namespace Hawk {
 
 	void Application::Run()
 	{
-		
-		ImGui_ImplVulkanH_Window* wd = _context->GetWindowData();
-		ImVec4 clear_color = ImVec4(0.2f, 0.2f, 0.2f, 0.2f);
-		ImGuiIO& io = ImGui::GetIO();
 
 		while (running)
 		{
@@ -63,31 +53,12 @@ namespace Hawk {
 			for (Layer* layer : _layerStack)
 				layer->Update();
 
-			_imGuiLayer->Begin(_context);
+			/*_imGuiLayer->Begin();
 			for (Layer* layer : _layerStack)
 				layer->OnImGuiRender();
-			_imGuiLayer->End(_context);
+			_imGuiLayer->End();*/
 
-			ImDrawData* main_draw_data = ImGui::GetDrawData();
-			const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
 			
-			wd->ClearValue.color.float32[0] = clear_color.x * clear_color.w;
-			wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
-			wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
-			wd->ClearValue.color.float32[3] = clear_color.w;
-			
-			if (!main_is_minimized)
-				_context->FrameRender(wd, main_draw_data);
-
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			{
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
-			}
-
-			// Present Main Platform Window
-			if (!main_is_minimized)
-				_context->FramePresent(wd);
 
 			_window->Update();
 		}

@@ -11,6 +11,11 @@ namespace Hawk {
 
 	static bool _GLFWInit = false;
 
+	VkRenderPass Window::GetRenderPass()
+	{
+		return VkRenderPass();
+	}
+
 	Window* Window::Create(const WindowProperties& properties)
 	{
 		return new WindowsWindow(properties);
@@ -44,17 +49,22 @@ namespace Hawk {
 		}
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 		//Create the GLFW window
 		_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, _data.Title.c_str(), nullptr, nullptr);
 
+		//Init VulkanContext
+		_context = new VulkanContext(_window);
+		_context->Init();
+
 		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);
-		
-		HWK_CORE_ASSERT(status, "Failed to Init GLAD");
-
+	
 		glfwSetWindowUserPointer(_window, &_data);
 
 		SetVSync(true); 
+
+
 
 		//GLFW Callbacks and Window Event setup
 

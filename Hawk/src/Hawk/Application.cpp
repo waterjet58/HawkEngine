@@ -30,7 +30,6 @@ namespace Hawk {
 		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
 
 		//_imGuiLayer = new ImGUILayer();
-		
 		//PushOverlay(_imGuiLayer);
 
 		float vetices[3 * 3] = {

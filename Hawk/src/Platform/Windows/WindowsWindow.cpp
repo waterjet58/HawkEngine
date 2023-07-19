@@ -55,7 +55,7 @@ namespace Hawk {
 
 		//Init VulkanContext
 		_context = new VulkanContext(_window);
-		_context->Init();
+		_context->init();
 
 		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);

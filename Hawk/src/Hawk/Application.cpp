@@ -32,12 +32,6 @@ namespace Hawk {
 		//_imGuiLayer = new ImGUILayer();
 		//PushOverlay(_imGuiLayer);
 
-		float vetices[3 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f,
-		};
-
 
 	}
 
@@ -52,15 +46,17 @@ namespace Hawk {
 			for (Layer* layer : _layerStack)
 				layer->Update();
 
-			/*_imGuiLayer->Begin();
-			for (Layer* layer : _layerStack)
-				layer->OnImGuiRender();
-			_imGuiLayer->End();*/
+			//_imGuiLayer->Begin();
+			//for (Layer* layer : _layerStack)
+			//	layer->OnImGuiRender();
+			//_imGuiLayer->End();
 
 			
 
 			_window->Update();
 		}
+
+		vkDeviceWaitIdle(_context->getDevice());
 
 		cleanup(); 
 

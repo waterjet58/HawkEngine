@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>HWK_PLATFORM_WINDOWS;HWK_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Hawk\vendor\spdlog\include;..\Hawk\src;..\Hawk\vendor;..\Hawk\vendor\GLFW\include;..\Hawk\vendor\imgui;C:\VulkanSDK\1.3.250.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Hawk\vendor\spdlog\include;..\Hawk\src;..\Hawk\vendor;..\Hawk\vendor\GLFW\include;..\Hawk\vendor\imgui;C:\VulkanSDK\1.3.250.1\Include;..\Hawk\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -98,7 +98,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>HWK_PLATFORM_WINDOWS;HWK_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Hawk\vendor\spdlog\include;..\Hawk\src;..\Hawk\vendor;..\Hawk\vendor\GLFW\include;..\Hawk\vendor\imgui;C:\VulkanSDK\1.3.250.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Hawk\vendor\spdlog\include;..\Hawk\src;..\Hawk\vendor;..\Hawk\vendor\GLFW\include;..\Hawk\vendor\imgui;C:\VulkanSDK\1.3.250.1\Include;..\Hawk\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -121,7 +121,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>HWK_PLATFORM_WINDOWS;HWK_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Hawk\vendor\spdlog\include;..\Hawk\src;..\Hawk\vendor;..\Hawk\vendor\GLFW\include;..\Hawk\vendor\imgui;C:\VulkanSDK\1.3.250.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Hawk\vendor\spdlog\include;..\Hawk\src;..\Hawk\vendor;..\Hawk\vendor\GLFW\include;..\Hawk\vendor\imgui;C:\VulkanSDK\1.3.250.1\Include;..\Hawk\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>

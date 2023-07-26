@@ -96,6 +96,9 @@
     <ClInclude Include="src\Hawk\Renderer\GraphicsContext.h">
       <Filter>src\Hawk\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hawk\Renderer\Model.h">
+      <Filter>src\Hawk\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hawk\Window.h">
       <Filter>src\Hawk</Filter>
     </ClInclude>

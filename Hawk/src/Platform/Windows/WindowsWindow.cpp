@@ -63,11 +63,13 @@ namespace Hawk {
 		_context->init(_data.Width, _data.Height);
 
 		_swapChain = new VulkanSwapChain(*_context, {_data.Width, _data.Height});
+
+		loadModels();
 		createPipelineLayout();
 		createPipeline();
 		createCommandBuffers();
 
-		initImGUI();
+		//_vulkanImGUI = new VulkanImGUI(_window, *_context, *_swapChain, *_pipeline);
 
 		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);
@@ -171,75 +173,7 @@ namespace Hawk {
 
 	void WindowsWindow::initImGUI()
 	{
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
 
-		//1: create descriptor pool for IMGUI
-		// the size of the pool is very oversize, but it's copied from imgui demo itself.
-		VkDescriptorPoolSize pool_sizes[] =
-		{
-			{ VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-			{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-			{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-			{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-			{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
-		};
-
-		VkDescriptorPoolCreateInfo pool_info = {};
-		pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-		pool_info.maxSets = 1000;
-		pool_info.poolSizeCount = std::size(pool_sizes);
-		pool_info.pPoolSizes = pool_sizes;
-
-		VkDescriptorPool imguiPool;
-		vkCreateDescriptorPool(_context->getDevice(), &pool_info, nullptr, &imguiPool);
-
-
-		// 2: initialize imgui library
-
-		//this initializes the core structures of imgui
-		ImGui::CreateContext();
-
-		//this initializes imgui for GLFW
-		ImGui_ImplGlfw_InitForVulkan(_window, true);
-
-		//this initializes imgui for Vulkan
-		ImGui_ImplVulkan_InitInfo init_info = {};
-		init_info.Instance = _context->getInstance();
-		init_info.PhysicalDevice = _context->getPhysicalDevice();
-		init_info.Device = _context->getDevice();
-		init_info.Queue = _context->getGraphicsQueue();
-		init_info.DescriptorPool = imguiPool;
-		init_info.MinImageCount = _swapChain->imageCount();
-		init_info.ImageCount = _swapChain->imageCount();
-		init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-
-		ImGui_ImplVulkan_Init(&init_info, _swapChain->getRenderPass());
-
-		// Use any command queue
-		VkCommandPool command_pool = _context->getCommandPool();
-		VkCommandBuffer command_buffer =_imGuiBuffer;
-
-		if (vkResetCommandPool(_context->getDevice(), command_pool, 0) != VK_SUCCESS) {
-			throw std::runtime_error("failed to reset command buffer");
-		}
-		VkCommandBufferBeginInfo begin_info = {};
-		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-		if (vkBeginCommandBuffer(command_buffer, &begin_info) != VK_SUCCESS) {
-
-		}
-
-		//ImGui_ImplVulkan_CreateFontsTexture(_imGuiBuffer);
-
-		//ImGui_ImplVulkan_DestroyFontUploadObjects();
 
 	}
 
@@ -311,7 +245,8 @@ namespace Hawk {
 			vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			_pipeline->bind(_commandBuffers[i]);
-			vkCmdDraw(_commandBuffers[i], 3, 1, 0, 0);
+			_model->bind(_commandBuffers[i]);
+			_model->draw(_commandBuffers[i]);
 
 			vkCmdEndRenderPass(_commandBuffers[i]);
 			if (vkEndCommandBuffer(_commandBuffers[i]) != VK_SUCCESS)
@@ -321,6 +256,30 @@ namespace Hawk {
 
 		}
 
+	}
+
+	void WindowsWindow::sierpinski(std::vector<Model::Vertex>& vertices, int depth, glm::vec2 left, glm::vec2 right, glm::vec2 top) 
+	{
+		if (depth <= 0) {
+			vertices.push_back({ top });
+			vertices.push_back({ right });
+			vertices.push_back({ left });
+		}
+		else {
+			auto leftTop = 0.5f * (left + top);
+			auto rightTop = 0.5f * (right + top);
+			auto leftRight = 0.5f * (left + right);
+			sierpinski(vertices, depth - 1, left, leftRight, leftTop);
+			sierpinski(vertices, depth - 1, leftRight, right, rightTop);
+			sierpinski(vertices, depth - 1, leftTop, rightTop, top);
+		}
+	}
+
+	void WindowsWindow::loadModels()
+	{
+		std::vector<Model::Vertex> vertices{};
+		sierpinski(vertices, 4, { -0.3f, 0.4f }, { 0.75f, 0.75f }, { 0.0f, -0.75f });
+		_model = std::make_unique<Model>(*_context, vertices);
 	}
 
 	void  WindowsWindow::drawFrame()

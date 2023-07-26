@@ -1,5 +1,6 @@
 #include "hwkPrecompiledHeader.h"
 #include "VulkanPipeline.h"
+#include "Hawk/Renderer/Model.h"
 
 namespace Hawk {
 	VulkanPipeline::VulkanPipeline(
@@ -140,12 +141,16 @@ namespace Hawk {
 		shaderStages[1].pNext = nullptr;
 		shaderStages[1].pSpecializationInfo = nullptr;
 
+		//Setting up the pipeline to read in the vertex data
+		auto bindingDescriptions = Model::Vertex::getBindingDescriptions();
+		auto attributeDescriptions = Model::Vertex::getAttributeDescriptions();
+
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexAttributeDescriptionCount = 0;
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+		vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
 		//Combining the viewport and scissor
 		VkPipelineViewportStateCreateInfo viewportInfo{};

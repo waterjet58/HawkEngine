@@ -5,6 +5,8 @@
 #include "GLFW/glfw3.h"
 #include "Platform/Vulkan/VulkanPipeline.h"
 #include "Platform/Vulkan/VulkanSwapChain.h"
+#include "Hawk/Renderer/Model.h"
+#include "Platform/Vulkan/VulkanImGUI.h"
 
 namespace Hawk {
 
@@ -25,6 +27,7 @@ namespace Hawk {
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();
+		void sierpinski(std::vector<Model::Vertex>& vertices, int depth, glm::vec2 left, glm::vec2 right, glm::vec2 top);
 		void drawFrame();
 		bool IsVSync() const override;
 		virtual void* GetNativeWindow() const { return _window; }
@@ -34,13 +37,16 @@ namespace Hawk {
 		VulkanContext* _context;
 		VulkanSwapChain* _swapChain;
 		std::unique_ptr<VulkanPipeline> _pipeline;
+		std::unique_ptr<Model> _model;
 		VkPipelineLayout _pipelineLayout;
 		std::vector<VkCommandBuffer> _commandBuffers;
 		VkCommandBuffer _imGuiBuffer;
+		VulkanImGUI* _vulkanImGUI;
 
 
 		virtual void Init(const WindowProperties& properties);
 		void initImGUI();
+		void loadModels();
 		virtual void Shutdown();
 
 		struct windowData {

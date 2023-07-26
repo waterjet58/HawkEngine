@@ -46,10 +46,10 @@ namespace Hawk {
 			for (Layer* layer : _layerStack)
 				layer->Update();
 
-			//_imGuiLayer->Begin();
-			//for (Layer* layer : _layerStack)
-			//	layer->OnImGuiRender();
-			//_imGuiLayer->End();
+			/*_imGuiLayer->Begin();
+			for (Layer* layer : _layerStack)
+				layer->OnImGuiRender();
+			_imGuiLayer->End();*/
 
 			
 

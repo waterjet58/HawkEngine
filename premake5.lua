@@ -19,7 +19,7 @@ IncludedDirectories = {}
 IncludedDirectories["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 IncludedDirectories["GLFW"] = "Hawk/vendor/GLFW/include"
 IncludedDirectories["imgui"] = "Hawk/vendor/imgui"
-IncludedDirectories["glm"] = "VulkanProject/vendor/glm"
+IncludedDirectories["glm"] = "Hawk/vendor/glm"
 
 LibraryDir = {}
 LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
@@ -58,7 +58,8 @@ project "Hawk"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludedDirectories.GLFW}",
 		"%{IncludedDirectories.imgui}",
-		"%{IncludedDirectories.VulkanSDK}"
+		"%{IncludedDirectories.VulkanSDK}",
+		"%{IncludedDirectories.glm}"
 	}
 
 	libdirs
@@ -121,7 +122,8 @@ project "Sandbox"
 		"Hawk/vendor",
 		"%{IncludedDirectories.GLFW}",
 		"%{IncludedDirectories.imgui}",
-		"%{IncludedDirectories.VulkanSDK}"
+		"%{IncludedDirectories.VulkanSDK}",
+		"%{IncludedDirectories.glm}"
 	}
 
 	libdirs

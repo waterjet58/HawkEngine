@@ -50,7 +50,7 @@ namespace Hawk {
 	void ImGUILayer::OnAttach()
 	{
 		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
+		ImGui::GetCurrentContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking

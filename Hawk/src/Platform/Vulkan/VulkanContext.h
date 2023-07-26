@@ -71,6 +71,8 @@ namespace Hawk {
 
 		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
+		void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
 		QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(_PhysicalDevice); }
 
 		void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
@@ -95,6 +97,10 @@ namespace Hawk {
 
 		VkCommandPool getCommandPool() { return _commandPool; }
 
+		VkCommandBuffer beginSingleTimeCommands();
+
+		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+
 		void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
 		void setupDebugMessenger();
@@ -109,7 +115,6 @@ namespace Hawk {
 		VkPhysicalDevice			_PhysicalDevice = VK_NULL_HANDLE;
 		VkDevice					_Device = VK_NULL_HANDLE;
 		uint32_t					_QueueFamily = (uint32_t)-1;
-		VkQueue						_Queue = VK_NULL_HANDLE;
 		VkDebugReportCallbackEXT	_DebugReport = VK_NULL_HANDLE;
 		VkPipelineCache				_PipelineCache = VK_NULL_HANDLE;
 		VkDescriptorPool			_DescriptorPool = VK_NULL_HANDLE;

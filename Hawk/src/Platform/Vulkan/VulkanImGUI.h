@@ -17,14 +17,12 @@ namespace Hawk {
 
 	private:
 		void createDescriptorPool();
-		void createRenderPass();
 
 		GLFWwindow* _window;
 		VulkanContext& _context;
 		VulkanSwapChain& _swapChain;
 		VulkanPipeline& _pipeline;
 		VkDescriptorPool _descriptor;
-		VkRenderPass _renderPass;
 	};
 
 }

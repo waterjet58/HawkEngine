@@ -11,11 +11,14 @@
 #include <backends/imgui_impl_vulkan.h>
 #include "Platform/Vulkan/VulkanContext.h"
 
+
+
 namespace Hawk {
 
 #define BIND_EVENT_FUNCTION(x) std::bind(&x, this, std::placeholders::_1)
 
 	Application* Application::s_Instance = nullptr;
+	
 
 	Application::Application()
 	{
@@ -29,37 +32,96 @@ namespace Hawk {
 		_window = std::unique_ptr<Window>(Window::Create(props));
 		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
 
+		_ecsManager = std::make_shared<ECSManager>();
+		_ecsManager->init();
+		RegisterComponents();
+		RegisterSystems();
+		std::vector<Entity> entities(MAX_ENTITIES - 1);
+		
 		//_imGuiLayer = new ImGUILayer();
 		//PushOverlay(_imGuiLayer);
 
+		for (auto& entity : entities)
+		{
+			entity = _ecsManager->createEntity();
+			_ecsManager->addComponent<Transform2D>(entity, Transform2D{});
+		}
 
 	}
 
 	Application::~Application() {}
 
+	
+
 	void Application::Run()
 	{
 
+		clock_t deltaTime = 0;
+		unsigned int frames = 0;
+		double frameRate = 30;
+
 		while (running)
 		{
+			clock_t beginFrame = clock();
 
 			for (Layer* layer : _layerStack)
 				layer->Update();
 
-			/*_imGuiLayer->Begin();
+			_imGuiLayer->Begin();
 			for (Layer* layer : _layerStack)
 				layer->OnImGuiRender();
-			_imGuiLayer->End();*/
+			_imGuiLayer->End();
 
 			
-
 			_window->Update();
+
+			//spriteRenderer->Update(0.0f);
+
+			clock_t endFrame = clock();
+
+			deltaTime += endFrame - beginFrame;
+			frames++;
+
+			if (clockToMilliseconds(deltaTime) > 1000.0) { //every second
+				frameRate = (double)frames * 0.5 + frameRate * 0.5; //more stable
+				HWK_INFO("FrameRate: {0}", frameRate);
+				frames = 0;
+				deltaTime -= CLOCKS_PER_SEC;
+			}
+
+
 		}
 
-		vkDeviceWaitIdle(_context->getDevice());
+		
+
+		//vkDeviceWaitIdle(_context->getDevice());
 
 		cleanup(); 
 
+	}
+
+	double Application::clockToMilliseconds(clock_t ticks) {
+		// units/(units/time) => time (seconds) * 1000 = milliseconds
+		return (ticks / (double)CLOCKS_PER_SEC) * 1000.0;
+	}
+
+	void Application::RegisterComponents()
+	{
+		_ecsManager->registerComponent<Transform2D>();
+		_ecsManager->registerComponent<Transform3D>();
+	}
+
+	void Application::RegisterSystems()
+	{
+		spriteRenderer = _ecsManager->registerSystem<SpriteRendererSystem>();
+		{
+			Signature signature;
+			signature.set(_ecsManager->getComponentType<Transform2D>());
+			//signature.set(_ecsManager->getComponentType<Transform3D>());
+			_ecsManager->setSystemSignature<SpriteRendererSystem>(signature);
+		}
+
+		spriteRenderer->Init(_ecsManager);
 	}
 
 	void Application::cleanup()

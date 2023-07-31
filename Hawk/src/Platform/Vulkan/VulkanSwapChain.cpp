@@ -6,12 +6,25 @@ namespace Hawk {
 
 VulkanSwapChain::VulkanSwapChain(VulkanContext &contextRef, VkExtent2D extent)
     : context{contextRef}, windowExtent{extent} {
-  createSwapChain();
-  createImageViews();
-  createRenderPass();
-  createDepthResources();
-  createFramebuffers();
-  createSyncObjects();
+    init();
+}
+
+VulkanSwapChain::VulkanSwapChain(VulkanContext& contextRef, VkExtent2D extent, std::shared_ptr<VulkanSwapChain> previousSwapChain)
+    : context{ contextRef }, windowExtent{ extent }, oldSwapChain(previousSwapChain) {
+    init();
+
+    //clean up old swap chain
+    oldSwapChain = nullptr;
+}
+
+void VulkanSwapChain::init()
+{
+    createSwapChain();
+    createImageViews();
+    createRenderPass();
+    createDepthResources();
+    createFramebuffers();
+    createSyncObjects();
 }
 
 VulkanSwapChain::~VulkanSwapChain() {
@@ -112,6 +125,8 @@ VkResult VulkanSwapChain::submitCommandBuffers(
   return result;
 }
 
+
+
 void VulkanSwapChain::createSwapChain() {
   SwapChainSupportDetails swapChainSupport = context.getSwapChainSupport();
 
@@ -155,7 +170,7 @@ void VulkanSwapChain::createSwapChain() {
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
 
-  createInfo.oldSwapchain = VK_NULL_HANDLE;
+  createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
   if (vkCreateSwapchainKHR(context.getDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
     throw std::runtime_error("failed to create swap chain!");
@@ -369,7 +384,7 @@ VkPresentModeKHR VulkanSwapChain::chooseSwapPresentMode(
     const std::vector<VkPresentModeKHR> &availablePresentModes) {
   for (const auto &availablePresentMode : availablePresentModes) {
     if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-        HWK_CORE_INFO("Present mode: Mailbox");
+        //HWK_CORE_INFO("Present mode: Mailbox");
       return availablePresentMode;
     }
   }

@@ -21,33 +21,40 @@ namespace Hawk {
 		inline unsigned int GetWidth() const override { return _data.Width; }
 		inline unsigned int GetHeight() const override { return _data.Height; }
 		VkExtent2D GetExtent() override { return { static_cast<uint32_t>(_data.Width), static_cast<uint32_t>(_data.Height) }; }
+		bool wasWindowResized() { return _framebufferResize; }
+		void resetWindowResized() { _framebufferResize = false; }
 
 		inline void SetEventCallback( const EventCallbackFunction& callback) override { _data.EventCallback = callback; }
 		void SetVSync(bool enabled) override;
-		void createPipelineLayout();
-		void createPipeline();
-		void createCommandBuffers();
-		void sierpinski(std::vector<Model::Vertex>& vertices, int depth, glm::vec2 left, glm::vec2 right, glm::vec2 top);
-		void drawFrame();
+
 		bool IsVSync() const override;
 		virtual void* GetNativeWindow() const { return _window; }
 
 	private:
 		GLFWwindow* _window;
 		VulkanContext* _context;
-		VulkanSwapChain* _swapChain;
+		std::unique_ptr<VulkanSwapChain> _swapChain;
 		std::unique_ptr<VulkanPipeline> _pipeline;
 		std::unique_ptr<Model> _model;
 		VkPipelineLayout _pipelineLayout;
 		std::vector<VkCommandBuffer> _commandBuffers;
 		VkCommandBuffer _imGuiBuffer;
 		VulkanImGUI* _vulkanImGUI;
-
+		bool _framebufferResize = false;
 
 		virtual void Init(const WindowProperties& properties);
 		void initImGUI();
 		void loadModels();
 		virtual void Shutdown();
+		static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
+		void recreateSwapChain();
+		void recordCommandBuffer(int imageIndex);
+		void doImGUIStuff();
+		void createPipelineLayout();
+		void createPipeline();
+		void createCommandBuffers();
+		void freeCommandBuffers();
+		void drawFrame();
 
 		struct windowData {
 			std::string Title = "";

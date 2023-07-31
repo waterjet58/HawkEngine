@@ -19,6 +19,8 @@
 #include <set>
 #include <stdexcept>
 
+#include "Hawk/ECS/Components/Transform.h"
+
 #ifdef HWK_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

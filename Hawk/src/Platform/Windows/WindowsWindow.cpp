@@ -12,7 +12,17 @@
 
 #include "Hawk/ImGui/Roboto-Regular.embed"
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+
 namespace Hawk {
+
+	struct SimplePushConstantData {
+		glm::mat2 transform{1.f};
+		glm::vec2 offset;
+		alignas(16) glm::vec3 color;
+	};
 
 	static bool _GLFWInit = false;
 
@@ -54,22 +64,22 @@ namespace Hawk {
 		}
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		//Create the GLFW window
 		_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, _data.Title.c_str(), nullptr, nullptr);
+		glfwSetWindowUserPointer(_window, this);
+		glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
 
 		//Init VulkanContext
 		_context = new VulkanContext(_window);
 		_context->init(_data.Width, _data.Height);
 
-		_swapChain = new VulkanSwapChain(*_context, {_data.Width, _data.Height});
+		_swapChain = std::make_unique<VulkanSwapChain>(*_context, GetExtent());
 
 		loadModels();
 		createPipelineLayout();
-		createPipeline();
+		recreateSwapChain();
 		createCommandBuffers();
-
-		//_vulkanImGUI = new VulkanImGUI(_window, *_context, *_swapChain, *_pipeline);
 
 		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);
@@ -169,6 +179,9 @@ namespace Hawk {
 			data.EventCallback(event);
 		});
 
+		//Need to init IMGUI after all of the call backs are created to not overwrite the callbacks that ImGui creates
+		_vulkanImGUI = new VulkanImGUI(_window, *_context, *_swapChain, *_pipeline);
+
 	}
 
 	void WindowsWindow::initImGUI()
@@ -187,7 +200,6 @@ namespace Hawk {
 
 	void WindowsWindow::Update()
 	{
-		
 		glfwPollEvents();
 		drawFrame();
 		//glfwSwapBuffers(_window);
@@ -217,68 +229,127 @@ namespace Hawk {
 		{
 			throw std::runtime_error("Failed to allocate command buffers!");
 		}
-
-		for (int i = 0; i < _commandBuffers.size(); i++)
-		{
-			VkCommandBufferBeginInfo beginInfo{};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-			if (vkBeginCommandBuffer(_commandBuffers[i], &beginInfo) != VK_SUCCESS)
-			{
-				throw std::runtime_error("failed to begin recording command buffer!");
-			}
-
-			VkRenderPassBeginInfo renderPassInfo{};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = _swapChain->getRenderPass();
-			renderPassInfo.framebuffer = _swapChain->getFrameBuffer(i);
-			renderPassInfo.renderArea.offset = { 0,0 };
-			renderPassInfo.renderArea.extent = _swapChain->getSwapChainExtent();
-
-			std::array<VkClearValue, 2> clearValues{};
-			clearValues[0].color = { 0.1f, 0.1f, 0.1f, 1.0f };
-			clearValues[1].depthStencil = { 1.0f, 0 };
-
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-			renderPassInfo.pClearValues = clearValues.data();
-
-			vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-			_pipeline->bind(_commandBuffers[i]);
-			_model->bind(_commandBuffers[i]);
-			_model->draw(_commandBuffers[i]);
-
-			vkCmdEndRenderPass(_commandBuffers[i]);
-			if (vkEndCommandBuffer(_commandBuffers[i]) != VK_SUCCESS)
-			{
-				throw std::runtime_error("failed to record command buffer!");
-			}
-
-		}
-
 	}
 
-	void WindowsWindow::sierpinski(std::vector<Model::Vertex>& vertices, int depth, glm::vec2 left, glm::vec2 right, glm::vec2 top) 
+	void WindowsWindow::freeCommandBuffers()
 	{
-		if (depth <= 0) {
-			vertices.push_back({ top });
-			vertices.push_back({ right });
-			vertices.push_back({ left });
+		vkFreeCommandBuffers(_context->getDevice(), _context->getCommandPool(), static_cast<uint32_t>(_commandBuffers.size()), _commandBuffers.data());
+		_commandBuffers.clear();
+	}
+
+	void WindowsWindow::recordCommandBuffer(int imageIndex)
+	{
+		static int frame = 0;
+		frame = (frame + 1) % 2000;
+
+		VkCommandBufferBeginInfo beginInfo{};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+		if (vkBeginCommandBuffer(_commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to begin recording command buffer!");
 		}
-		else {
-			auto leftTop = 0.5f * (left + top);
-			auto rightTop = 0.5f * (right + top);
-			auto leftRight = 0.5f * (left + right);
-			sierpinski(vertices, depth - 1, left, leftRight, leftTop);
-			sierpinski(vertices, depth - 1, leftRight, right, rightTop);
-			sierpinski(vertices, depth - 1, leftTop, rightTop, top);
+
+		VkRenderPassBeginInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassInfo.renderPass = _swapChain->getRenderPass();
+		renderPassInfo.framebuffer = _swapChain->getFrameBuffer(imageIndex);
+		renderPassInfo.renderArea.offset = { 0,0 };
+		renderPassInfo.renderArea.extent = _swapChain->getSwapChainExtent();
+
+		std::array<VkClearValue, 2> clearValues{};
+		clearValues[0].color = { 0.1f, 0.1f, 0.1f, 1.0f };
+		clearValues[1].depthStencil = { 1.0f, 0 };
+
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
+
+		vkCmdBeginRenderPass(_commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+		VkViewport viewport{};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = static_cast<float>(_swapChain->getSwapChainExtent().width);
+		viewport.height = static_cast<float>(_swapChain->getSwapChainExtent().height);
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+		VkRect2D scissor{ {0, 0}, _swapChain->getSwapChainExtent() };
+		vkCmdSetViewport(_commandBuffers[imageIndex], 0, 1, &viewport);
+		vkCmdSetScissor(_commandBuffers[imageIndex], 0, 1, &scissor);
+
+		_pipeline->bind(_commandBuffers[imageIndex]);
+		_model->bind(_commandBuffers[imageIndex]);
+
+		for (int i = 0; i < 5; i++)
+		{
+			SimplePushConstantData push{};
+			push.offset = { -1.5f + frame * (.0009f * (i)), -0.5f + i * .2f};
+			push.color = { 0.0f, 0.5f + (.1f * i) , 0.0f};
+
+			vkCmdPushConstants(_commandBuffers[imageIndex], _pipelineLayout,
+							   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+							   0, sizeof(SimplePushConstantData), &push);
+
+			_model->draw(_commandBuffers[imageIndex]);
 		}
+
+		ImDrawData *draw_data = ImGui::GetDrawData();
+		ImGui_ImplVulkan_RenderDrawData(draw_data, _commandBuffers[imageIndex]);
+
+
+		vkCmdEndRenderPass(_commandBuffers[imageIndex]);
+		if (vkEndCommandBuffer(_commandBuffers[imageIndex]) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to record command buffer!");
+		}
+	}
+
+
+
+	void WindowsWindow::recreateSwapChain()
+	{
+		auto extent = GetExtent();
+		while (extent.width == 0 || extent.height == 0)
+		{
+			extent = GetExtent();
+			glfwWaitEvents();
+		}
+
+		vkDeviceWaitIdle(_context->getDevice());
+
+		if (_swapChain == nullptr)
+		{
+			_swapChain = std::make_unique<VulkanSwapChain>(*_context, extent);
+		}
+		else
+		{
+			_swapChain = std::make_unique<VulkanSwapChain>(*_context, extent, std::move(_swapChain));
+			if (_swapChain->imageCount() != _commandBuffers.size() && _commandBuffers.size() != 0)
+			{
+				ImGui_ImplVulkan_SetMinImageCount(_swapChain->imageCount());
+				freeCommandBuffers();
+				createCommandBuffers();
+			}
+		}
+
+		createPipeline();
+	}
+
+	void WindowsWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height)
+	{
+		auto curWindow = reinterpret_cast<WindowsWindow*>(glfwGetWindowUserPointer(window));
+		curWindow->_framebufferResize = true;
+		curWindow->_data.Width = width;
+		curWindow->_data.Height = height;
 	}
 
 	void WindowsWindow::loadModels()
 	{
-		std::vector<Model::Vertex> vertices{};
-		sierpinski(vertices, 4, { -0.3f, 0.4f }, { 0.75f, 0.75f }, { 0.0f, -0.75f });
+		std::vector<Model::Vertex> vertices{
+		{{0.0f, -0.5f}, { 1.0f, 0.0f, 0.0f }}, //Red vertice
+		{{0.5f, 0.5f}, { 0.0f, 1.0f, 0.0f }}, //Green vertice
+		{{-0.5f, 0.5f}, { 0.0f, 0.0f, 1.0f }} //Blue vertice
+		};
 		_model = std::make_unique<Model>(*_context, vertices);
 	}
 
@@ -287,12 +358,26 @@ namespace Hawk {
 		uint32_t imageIndex;
 		auto result = _swapChain->acquireNextImage(&imageIndex);
 
+		if (result == VK_ERROR_OUT_OF_DATE_KHR)
+		{
+			recreateSwapChain();
+			return;
+		}
+
 		if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 		{
 			throw std::runtime_error("failed to acquire swap chain image");
 		}
 
+		recordCommandBuffer(imageIndex);
 		result = _swapChain->submitCommandBuffers(&_commandBuffers[imageIndex], &imageIndex);
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || wasWindowResized())
+		{
+			resetWindowResized();
+			recreateSwapChain();
+			return;
+		}
+
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to present swap chain image!");
@@ -302,12 +387,18 @@ namespace Hawk {
 
 	void WindowsWindow::createPipelineLayout()
 	{
+		VkPushConstantRange pushConstantRange{};
+		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+		pushConstantRange.offset = 0;
+		pushConstantRange.size = sizeof(SimplePushConstantData);
+
+
 		VkPipelineLayoutCreateInfo layoutCreateInfo{};
 		layoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		layoutCreateInfo.setLayoutCount = 0;
 		layoutCreateInfo.pSetLayouts = nullptr;
-		layoutCreateInfo.pushConstantRangeCount = 0;
-		layoutCreateInfo.pPushConstantRanges = nullptr;
+		layoutCreateInfo.pushConstantRangeCount = 1;
+		layoutCreateInfo.pPushConstantRanges = &pushConstantRange;
 		if (vkCreatePipelineLayout(_context->getDevice(), &layoutCreateInfo, _context->getAllocator(), &_pipelineLayout) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Pipeline layout failed to be created");
@@ -317,7 +408,8 @@ namespace Hawk {
 
 	void WindowsWindow::createPipeline()
 	{
-		auto pipelineConfig = VulkanPipeline::defaultPipelineConfigInfo(_swapChain->width(), _swapChain->height());
+		PipelineConfigInfo pipelineConfig{};
+		VulkanPipeline::defaultPipelineConfigInfo(pipelineConfig);
 		pipelineConfig.renderPass = _swapChain->getRenderPass();
 		pipelineConfig.pipelineLayout = _pipelineLayout;
 

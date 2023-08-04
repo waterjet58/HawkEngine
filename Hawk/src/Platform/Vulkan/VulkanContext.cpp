@@ -53,7 +53,6 @@ namespace Hawk {
 		}
 	}
 
-
 	VulkanContext::VulkanContext(GLFWwindow* window)
 	{
 		_window = window;
@@ -506,7 +505,6 @@ namespace Hawk {
 
 		vkFreeCommandBuffers(_Device, _commandPool, 1, &commandBuffer);
 	}
-
 
 	void VulkanContext::cleanup()
 	{

@@ -20,6 +20,9 @@
 #include <stdexcept>
 
 #include "Hawk/ECS/Components/Transform.h"
+#include "Hawk/ECS/Components/Sprite.h"
+
+#include <glm/gtc/constants.hpp>
 
 #ifdef HWK_PLATFORM_WINDOWS
 	#include <Windows.h>

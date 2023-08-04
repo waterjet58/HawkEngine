@@ -15,28 +15,22 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <Hawk/ECS/Components/Sprite.h>
+#include <Hawk/ECS/Entity.h>
+#include <Hawk/ECS/Systems/SpriteRendererSystem.h>
+#include <Hawk/Application.h>
 
 namespace Hawk {
 
-	struct SimplePushConstantData {
-		glm::mat2 transform{1.f};
-		glm::vec2 offset;
-		alignas(16) glm::vec3 color;
-	};
-
 	static bool _GLFWInit = false;
 
-	VkRenderPass Window::GetRenderPass()
+	Window* Window::Create(const WindowProperties& properties, std::shared_ptr<ECSManager> manager, VulkanContext& context, VulkanRenderer& renderer)
 	{
-		return VkRenderPass();
+		return new WindowsWindow(properties, manager, context, renderer);
 	}
 
-	Window* Window::Create(const WindowProperties& properties)
-	{
-		return new WindowsWindow(properties);
-	}
-
-	WindowsWindow::WindowsWindow(const WindowProperties& properties)
+	WindowsWindow::WindowsWindow(const WindowProperties& properties, std::shared_ptr<ECSManager> manager, VulkanContext& context, VulkanRenderer& renderer) 
+		: _ecsManager(manager), _context(context), _renderer(renderer)
 	{
 		Init(properties);
 	}
@@ -53,8 +47,9 @@ namespace Hawk {
 		_data.Height = properties.Height;
 		
 		HWK_CORE_INFO("Creating Window {0} ({1}, {2})", properties.Title, properties.Width, properties.Height);
-
 		
+		//INIT ALL NEEDED SYSTEMS FOR RENDERING
+		_spriteRenderer = Application::Get().getSpriteRenderer();
 
 		if (!_GLFWInit)
 		{
@@ -70,16 +65,8 @@ namespace Hawk {
 		glfwSetWindowUserPointer(_window, this);
 		glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
 
-		//Init VulkanContext
-		_context = new VulkanContext(_window);
-		_context->init(_data.Width, _data.Height);
-
-		_swapChain = std::make_unique<VulkanSwapChain>(*_context, GetExtent());
-
 		loadModels();
 		createPipelineLayout();
-		recreateSwapChain();
-		createCommandBuffers();
 
 		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);
@@ -180,7 +167,7 @@ namespace Hawk {
 		});
 
 		//Need to init IMGUI after all of the call backs are created to not overwrite the callbacks that ImGui creates
-		_vulkanImGUI = new VulkanImGUI(_window, *_context, *_swapChain, *_pipeline);
+		//_vulkanImGUI = new VulkanImGUI(_window, _context, _renderer);
 
 	}
 
@@ -192,7 +179,7 @@ namespace Hawk {
 
 	void WindowsWindow::Shutdown()
 	{
-		vkDestroyPipelineLayout(_context->getDevice(), _pipelineLayout, _context->getAllocator());
+		vkDestroyPipelineLayout(_context.getDevice(), _pipelineLayout, _context.getAllocator());
 
 		glfwDestroyWindow(_window);
 		glfwTerminate();
@@ -201,7 +188,13 @@ namespace Hawk {
 	void WindowsWindow::Update()
 	{
 		glfwPollEvents();
-		drawFrame();
+		if (auto commandBuffer = _renderer.beginFrame())
+		{
+			_renderer.beginSwapChainRenderPass(commandBuffer);
+			renderGameObjects(commandBuffer);
+			_renderer.endSwapChainRenderPass(commandBuffer);
+			_renderer.endFrame();
+		}
 		//glfwSwapBuffers(_window);
 	}
 
@@ -215,124 +208,14 @@ namespace Hawk {
 		_data.VSync = state;*/
 	}
 
-	void  WindowsWindow::createCommandBuffers()
+	//ImDrawData *draw_data = ImGui::GetDrawData();
+	//ImGui_ImplVulkan_RenderDrawData(draw_data, _commandBuffers[imageIndex]);
+
+	void WindowsWindow::renderGameObjects(VkCommandBuffer buffer)
 	{
-		_commandBuffers.resize(_swapChain->imageCount());
+		_pipeline->bind(buffer);
 
-		VkCommandBufferAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = _context->getCommandPool();
-		allocInfo.commandBufferCount = static_cast<uint32_t>(_commandBuffers.size());
-
-		if (vkAllocateCommandBuffers(_context->getDevice(), &allocInfo, _commandBuffers.data()) != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to allocate command buffers!");
-		}
-	}
-
-	void WindowsWindow::freeCommandBuffers()
-	{
-		vkFreeCommandBuffers(_context->getDevice(), _context->getCommandPool(), static_cast<uint32_t>(_commandBuffers.size()), _commandBuffers.data());
-		_commandBuffers.clear();
-	}
-
-	void WindowsWindow::recordCommandBuffer(int imageIndex)
-	{
-		static int frame = 0;
-		frame = (frame + 1) % 2000;
-
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-		if (vkBeginCommandBuffer(_commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to begin recording command buffer!");
-		}
-
-		VkRenderPassBeginInfo renderPassInfo{};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = _swapChain->getRenderPass();
-		renderPassInfo.framebuffer = _swapChain->getFrameBuffer(imageIndex);
-		renderPassInfo.renderArea.offset = { 0,0 };
-		renderPassInfo.renderArea.extent = _swapChain->getSwapChainExtent();
-
-		std::array<VkClearValue, 2> clearValues{};
-		clearValues[0].color = { 0.1f, 0.1f, 0.1f, 1.0f };
-		clearValues[1].depthStencil = { 1.0f, 0 };
-
-		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-		renderPassInfo.pClearValues = clearValues.data();
-
-		vkCmdBeginRenderPass(_commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-		VkViewport viewport{};
-		viewport.x = 0.0f;
-		viewport.y = 0.0f;
-		viewport.width = static_cast<float>(_swapChain->getSwapChainExtent().width);
-		viewport.height = static_cast<float>(_swapChain->getSwapChainExtent().height);
-		viewport.minDepth = 0.0f;
-		viewport.maxDepth = 1.0f;
-		VkRect2D scissor{ {0, 0}, _swapChain->getSwapChainExtent() };
-		vkCmdSetViewport(_commandBuffers[imageIndex], 0, 1, &viewport);
-		vkCmdSetScissor(_commandBuffers[imageIndex], 0, 1, &scissor);
-
-		_pipeline->bind(_commandBuffers[imageIndex]);
-		_model->bind(_commandBuffers[imageIndex]);
-
-		for (int i = 0; i < 5; i++)
-		{
-			SimplePushConstantData push{};
-			push.offset = { -1.5f + frame * (.0009f * (i)), -0.5f + i * .2f};
-			push.color = { 0.0f, 0.5f + (.1f * i) , 0.0f};
-
-			vkCmdPushConstants(_commandBuffers[imageIndex], _pipelineLayout,
-							   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-							   0, sizeof(SimplePushConstantData), &push);
-
-			_model->draw(_commandBuffers[imageIndex]);
-		}
-
-		ImDrawData *draw_data = ImGui::GetDrawData();
-		ImGui_ImplVulkan_RenderDrawData(draw_data, _commandBuffers[imageIndex]);
-
-
-		vkCmdEndRenderPass(_commandBuffers[imageIndex]);
-		if (vkEndCommandBuffer(_commandBuffers[imageIndex]) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to record command buffer!");
-		}
-	}
-
-
-
-	void WindowsWindow::recreateSwapChain()
-	{
-		auto extent = GetExtent();
-		while (extent.width == 0 || extent.height == 0)
-		{
-			extent = GetExtent();
-			glfwWaitEvents();
-		}
-
-		vkDeviceWaitIdle(_context->getDevice());
-
-		if (_swapChain == nullptr)
-		{
-			_swapChain = std::make_unique<VulkanSwapChain>(*_context, extent);
-		}
-		else
-		{
-			_swapChain = std::make_unique<VulkanSwapChain>(*_context, extent, std::move(_swapChain));
-			if (_swapChain->imageCount() != _commandBuffers.size() && _commandBuffers.size() != 0)
-			{
-				ImGui_ImplVulkan_SetMinImageCount(_swapChain->imageCount());
-				freeCommandBuffers();
-				createCommandBuffers();
-			}
-		}
-
-		createPipeline();
+		_spriteRenderer->Update(.0f, buffer, _pipelineLayout);
 	}
 
 	void WindowsWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height)
@@ -346,43 +229,30 @@ namespace Hawk {
 	void WindowsWindow::loadModels()
 	{
 		std::vector<Model::Vertex> vertices{
-		{{0.0f, -0.5f}, { 1.0f, 0.0f, 0.0f }}, //Red vertice
-		{{0.5f, 0.5f}, { 0.0f, 1.0f, 0.0f }}, //Green vertice
-		{{-0.5f, 0.5f}, { 0.0f, 0.0f, 1.0f }} //Blue vertice
+		{{0.0f, -0.1f}, { 1.0f, 0.0f, 0.0f }}, //Red vertice
+		{{0.1f, 0.1f}, { 0.0f, 1.0f, 0.0f }}, //Green vertice
+		{{-0.1f, 0.1f}, { 0.0f, 0.0f, 1.0f }} //Blue vertice
 		};
-		_model = std::make_unique<Model>(*_context, vertices);
-	}
+		_model = std::make_shared<Model>(*_context, vertices);
 
-	void  WindowsWindow::drawFrame()
-	{
-		uint32_t imageIndex;
-		auto result = _swapChain->acquireNextImage(&imageIndex);
-
-		if (result == VK_ERROR_OUT_OF_DATE_KHR)
+		for (int i = 0; i < 50; i++)
 		{
-			recreateSwapChain();
-			return;
+			Entity entity;
+
+			entity = _ecsManager->createEntity();
+			Sprite sprite;
+
+			sprite.color = { (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX };
+			sprite.transform.position.x = (float)rand()/RAND_MAX * 1.5 - .8f;
+			sprite.transform.position.y = (float)rand()/RAND_MAX * 1.5 - .8f;
+			sprite.model = _model;
+			sprite.transform.scale = { ((float)rand() / RAND_MAX) * 4, ((float)rand() / RAND_MAX) * 4 };
+			sprite.transform.rotation = ((float)rand() / RAND_MAX) * glm::two_pi<float>();
+
+			_ecsManager->addComponent<Sprite>(entity, sprite);
 		}
 
-		if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-		{
-			throw std::runtime_error("failed to acquire swap chain image");
-		}
-
-		recordCommandBuffer(imageIndex);
-		result = _swapChain->submitCommandBuffers(&_commandBuffers[imageIndex], &imageIndex);
-		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || wasWindowResized())
-		{
-			resetWindowResized();
-			recreateSwapChain();
-			return;
-		}
-
-		if (result != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to present swap chain image!");
-		}
-
+		
 	}
 
 	void WindowsWindow::createPipelineLayout()
@@ -399,7 +269,7 @@ namespace Hawk {
 		layoutCreateInfo.pSetLayouts = nullptr;
 		layoutCreateInfo.pushConstantRangeCount = 1;
 		layoutCreateInfo.pPushConstantRanges = &pushConstantRange;
-		if (vkCreatePipelineLayout(_context->getDevice(), &layoutCreateInfo, _context->getAllocator(), &_pipelineLayout) != VK_SUCCESS)
+		if (vkCreatePipelineLayout(_context.getDevice(), &layoutCreateInfo, _context.getAllocator(), &_pipelineLayout) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Pipeline layout failed to be created");
 		}
@@ -410,10 +280,10 @@ namespace Hawk {
 	{
 		PipelineConfigInfo pipelineConfig{};
 		VulkanPipeline::defaultPipelineConfigInfo(pipelineConfig);
-		pipelineConfig.renderPass = _swapChain->getRenderPass();
+		pipelineConfig.renderPass = _renderer.getSwapChainRenderPass();
 		pipelineConfig.pipelineLayout = _pipelineLayout;
 
-		_pipeline = std::make_unique<VulkanPipeline>(*_context, "../Hawk/src/Shaders/simple_shader.vert.spv",
+		_pipeline = std::make_unique<VulkanPipeline>(_context, "../Hawk/src/Shaders/simple_shader.vert.spv",
 			"../Hawk/src/Shaders/simple_shader.frag.spv", pipelineConfig);
 
 	}

@@ -14,7 +14,7 @@ public:
 
 	void OnEvent(Hawk::Event& event) override
 	{
-		HWK_TRACE("{0}", event.GetName());
+		//HWK_TRACE("{0}", event.GetName());
 	}
 
 	virtual void OnImGuiRender() override

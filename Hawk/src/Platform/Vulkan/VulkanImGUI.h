@@ -1,7 +1,7 @@
 #pragma once
 #include "Platform/Vulkan/VulkanContext.h"
-#include "Platform/Vulkan/VulkanSwapChain.h"
-#include "Platform/Vulkan/VulkanPipeline.h"
+#include "VulkanRenderer.h"
+#include "Platform/Vulkan/VulkanRenderer.h"
 #include "imgui.h"
 
 namespace Hawk {
@@ -10,7 +10,7 @@ namespace Hawk {
 
 	public:
 
-		VulkanImGUI(GLFWwindow* window, VulkanContext& context, VulkanSwapChain& swapChain, VulkanPipeline& pipeline);
+		VulkanImGUI(GLFWwindow* window, VulkanContext& context, VulkanRenderer& renderer);
 		~VulkanImGUI();
 
 		void initImGUI();
@@ -20,8 +20,7 @@ namespace Hawk {
 
 		GLFWwindow* _window;
 		VulkanContext& _context;
-		VulkanSwapChain& _swapChain;
-		VulkanPipeline& _pipeline;
+		VulkanRenderer& _renderer;
 		VkDescriptorPool _descriptor;
 	};
 

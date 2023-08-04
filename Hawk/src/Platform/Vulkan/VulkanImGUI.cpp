@@ -4,8 +4,8 @@
 
 namespace Hawk {
 
-	VulkanImGUI::VulkanImGUI(GLFWwindow* window,VulkanContext& context, VulkanSwapChain& swapChain, VulkanPipeline& pipeline)
-		:_window(window), _context(context), _swapChain(swapChain), _pipeline(pipeline)
+	VulkanImGUI::VulkanImGUI(GLFWwindow* window,VulkanContext& context, VulkanRenderer& renderer)
+		:_window(window), _context(context), _renderer(renderer)
 	{
 		initImGUI();
 	}
@@ -40,9 +40,9 @@ namespace Hawk {
 		init_info.PipelineCache = nullptr;
 		init_info.DescriptorPool = _descriptor;
 		init_info.Allocator = _context.getAllocator();
-		init_info.MinImageCount = static_cast<uint32_t>(_swapChain.imageCount());
-		init_info.ImageCount = static_cast<uint32_t>(_swapChain.imageCount());
-		ImGui_ImplVulkan_Init(&init_info, _swapChain.getRenderPass());
+		init_info.MinImageCount = static_cast<uint32_t>(_renderer.getImageCount());
+		init_info.ImageCount = static_cast<uint32_t>(_renderer.getImageCount());
+		ImGui_ImplVulkan_Init(&init_info, _renderer.getSwapChainRenderPass());
 
 		VkCommandBuffer command_buffer = _context.beginSingleTimeCommands();
 		ImGui_ImplVulkan_CreateFontsTexture(command_buffer);

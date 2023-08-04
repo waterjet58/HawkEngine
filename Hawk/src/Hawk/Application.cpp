@@ -10,6 +10,7 @@
 #include <imgui.h>
 #include <backends/imgui_impl_vulkan.h>
 #include "Platform/Vulkan/VulkanContext.h"
+#include "ECS/Components/Sprite.h"
 
 
 
@@ -25,27 +26,31 @@ namespace Hawk {
 		HWK_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
-		WindowProperties props;
-		props.Height = 980;
-		props.Width = 1280;
-
-		_window = std::unique_ptr<Window>(Window::Create(props));
-		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
-
 		_ecsManager = std::make_shared<ECSManager>();
 		_ecsManager->init();
 		RegisterComponents();
 		RegisterSystems();
-		std::vector<Entity> entities(MAX_ENTITIES - 1);
 		
+
+		WindowProperties props;
+		props.Height = 980;
+		props.Width = 1280;
+
+		_window = std::unique_ptr<Window>(Window::Create(props, _ecsManager, _context, _renderer));
+		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
+		//Init VulkanContext
+
+		VulkanContext _context(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
+		_context.init(props.Width, props.Height);
+
+		VulkanRenderer _renderer(&_context);
+		
+		//_window->SetRenderer(&_renderer);
+
 		//_imGuiLayer = new ImGUILayer();
 		//PushOverlay(_imGuiLayer);
 
-		for (auto& entity : entities)
-		{
-			entity = _ecsManager->createEntity();
-			_ecsManager->addComponent<Transform2D>(entity, Transform2D{});
-		}
+		
 
 	}
 
@@ -109,6 +114,7 @@ namespace Hawk {
 	{
 		_ecsManager->registerComponent<Transform2D>();
 		_ecsManager->registerComponent<Transform3D>();
+		_ecsManager->registerComponent<Sprite>();
 	}
 
 	void Application::RegisterSystems()
@@ -116,7 +122,7 @@ namespace Hawk {
 		spriteRenderer = _ecsManager->registerSystem<SpriteRendererSystem>();
 		{
 			Signature signature;
-			signature.set(_ecsManager->getComponentType<Transform2D>());
+			signature.set(_ecsManager->getComponentType<Sprite>());
 			//signature.set(_ecsManager->getComponentType<Transform3D>());
 			_ecsManager->setSystemSignature<SpriteRendererSystem>(signature);
 		}

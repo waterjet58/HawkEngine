@@ -151,8 +151,9 @@
     <ClInclude Include="src\Hawk\Core.h" />
     <ClInclude Include="src\Hawk\ECS\Components\ComponentArray.h" />
     <ClInclude Include="src\Hawk\ECS\Components\ComponentManager.h" />
+    <ClInclude Include="src\Hawk\ECS\Components\Sprite.h" />
     <ClInclude Include="src\Hawk\ECS\Components\Transform.h" />
-    <ClInclude Include="src\Hawk\ECS\ECSManager.hpp" />
+    <ClInclude Include="src\Hawk\ECS\Entity.h" />
     <ClInclude Include="src\Hawk\ECS\EntityManager.h" />
     <ClInclude Include="src\Hawk\ECS\Systems\SpriteRendererSystem.h" />
     <ClInclude Include="src\Hawk\ECS\Systems\System.h" />
@@ -162,7 +163,6 @@
     <ClInclude Include="src\Hawk\Events\Event.h" />
     <ClInclude Include="src\Hawk\Events\KeyEvent.h" />
     <ClInclude Include="src\Hawk\Events\MouseEvent.h" />
-    <ClInclude Include="src\Hawk\ECS\Entity.h" />
     <ClInclude Include="src\Hawk\ImGui\ImGUILayer.h" />
     <ClInclude Include="src\Hawk\Input.h" />
     <ClInclude Include="src\Hawk\KeyCodes.h" />
@@ -176,6 +176,7 @@
     <ClInclude Include="src\Platform\Vulkan\VulkanContext.h" />
     <ClInclude Include="src\Platform\Vulkan\VulkanImGUI.h" />
     <ClInclude Include="src\Platform\Vulkan\VulkanPipeline.h" />
+    <ClInclude Include="src\Platform\Vulkan\VulkanRenderer.h" />
     <ClInclude Include="src\Platform\Vulkan\VulkanSwapChain.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
@@ -609,6 +610,7 @@
     <ClCompile Include="src\Platform\Vulkan\VulkanContext.cpp" />
     <ClCompile Include="src\Platform\Vulkan\VulkanImGUI.cpp" />
     <ClCompile Include="src\Platform\Vulkan\VulkanPipeline.cpp" />
+    <ClCompile Include="src\Platform\Vulkan\VulkanRenderer.cpp" />
     <ClCompile Include="src\Platform\Vulkan\VulkanSwapChain.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
@@ -623,24 +625,6 @@
     <ProjectReference Include="vendor\imgui\imgui.vcxproj">
       <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="src\Shaders\simple_shader.frag">
-      <FileType>Document</FileType>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling fragment shader</Message>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VULKAN_SDK)\Bin\glslc.exe -o %(Identity).spv %(Identity)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Identity).spv</Outputs>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="src\Shaders\simple_shader.vert">
-      <FileType>Document</FileType>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling Vertex Shader</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VULKAN_SDK)\Bin\glslc.exe -o %(Identity).spv %(Identity)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Identity).spv</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

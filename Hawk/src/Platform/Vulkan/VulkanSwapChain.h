@@ -9,7 +9,7 @@ public:
      static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
      VulkanSwapChain(VulkanContext &contextRef, VkExtent2D windowExtent);
-     VulkanSwapChain(VulkanContext& contextRef, VkExtent2D windowExtent, std::shared_ptr<VulkanSwapChain> previousSwapChain);
+     VulkanSwapChain(VulkanContext &contextRef, VkExtent2D windowExtent, std::shared_ptr<VulkanSwapChain> previousSwapChain);
      ~VulkanSwapChain();
 
      VulkanSwapChain(const VulkanSwapChain &) = delete;

@@ -8,7 +8,6 @@
 #include "Hawk/Input.h"
 #include "Hawk/MouseCodes.h"
 #include "Hawk/KeyCodes.h"
-#include "Hawk/ECS/ECSManager.hpp"
 
 // --Entry Point--
 #include "Hawk/EntryPoint.h"

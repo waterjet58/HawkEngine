@@ -7,6 +7,15 @@
     <Filter Include="src\Hawk">
       <UniqueIdentifier>{A7561FCF-9323-7ADA-BC3C-6882A868AF68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Hawk\ECS">
+      <UniqueIdentifier>{7146C366-5DA9-520B-062F-8BC1F2701E8E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Hawk\ECS\Components">
+      <UniqueIdentifier>{E6A2044B-52DA-4CE2-5BE4-B005C79A73DB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Hawk\ECS\Systems">
+      <UniqueIdentifier>{787D7163-640C-FB2C-0D2B-0F28F9980BD3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Hawk\Events">
       <UniqueIdentifier>{AB202ABE-17AC-9782-20BD-1A778CC7F382}</UniqueIdentifier>
     </Filter>
@@ -57,6 +66,33 @@
     <ClInclude Include="src\Hawk\Core.h">
       <Filter>src\Hawk</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Components\ComponentArray.h">
+      <Filter>src\Hawk\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Components\ComponentManager.h">
+      <Filter>src\Hawk\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Components\Sprite.h">
+      <Filter>src\Hawk\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Components\Transform.h">
+      <Filter>src\Hawk\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Entity.h">
+      <Filter>src\Hawk\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\EntityManager.h">
+      <Filter>src\Hawk\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Systems\SpriteRendererSystem.h">
+      <Filter>src\Hawk\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Systems\System.h">
+      <Filter>src\Hawk\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Systems\SystemManager.h">
+      <Filter>src\Hawk\ECS\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hawk\EntryPoint.h">
       <Filter>src\Hawk</Filter>
     </ClInclude>
@@ -105,7 +141,13 @@
     <ClInclude Include="src\Platform\Vulkan\VulkanContext.h">
       <Filter>src\Platform\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\Vulkan\VulkanImGUI.h">
+      <Filter>src\Platform\Vulkan</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\Vulkan\VulkanPipeline.h">
+      <Filter>src\Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Vulkan\VulkanRenderer.h">
       <Filter>src\Platform\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Vulkan\VulkanSwapChain.h">
@@ -1373,6 +1415,9 @@
     <ClCompile Include="src\Hawk\Application.cpp">
       <Filter>src\Hawk</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hawk\ECS\Systems\SpriteRendererSystem.cpp">
+      <Filter>src\Hawk\ECS\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\Hawk\ImGui\ImGUIBuild.cpp">
       <Filter>src\Hawk\ImGui</Filter>
     </ClCompile>
@@ -1388,10 +1433,19 @@
     <ClCompile Include="src\Hawk\Log.cpp">
       <Filter>src\Hawk</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hawk\Renderer\Model.cpp">
+      <Filter>src\Hawk\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\Vulkan\VulkanContext.cpp">
       <Filter>src\Platform\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\Vulkan\VulkanImGUI.cpp">
+      <Filter>src\Platform\Vulkan</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\Vulkan\VulkanPipeline.cpp">
+      <Filter>src\Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Vulkan\VulkanRenderer.cpp">
       <Filter>src\Platform\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Vulkan\VulkanSwapChain.cpp">

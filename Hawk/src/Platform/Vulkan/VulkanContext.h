@@ -26,7 +26,6 @@ namespace Hawk {
 
 	class VulkanContext : public GraphicsContext
 	{
-
 	public:
 
 #ifdef NDEBUG
@@ -105,7 +104,6 @@ namespace Hawk {
 
 		void setupDebugMessenger();
 
-
 	private:
 
 		GLFWwindow* _window;
@@ -119,12 +117,12 @@ namespace Hawk {
 		VkPipelineCache				_PipelineCache = VK_NULL_HANDLE;
 		VkDescriptorPool			_DescriptorPool = VK_NULL_HANDLE;
 		VkDebugUtilsMessengerEXT	_DebugMessenger = VK_NULL_HANDLE;
-		VkCommandPool				_commandPool;
+		VkCommandPool				_commandPool = VK_NULL_HANDLE;;
 
-		VkDevice _device;
-		VkSurfaceKHR _Surface;
-		VkQueue _graphicsQueue;
-		VkQueue _presentQueue;
+		VkDevice _device = VK_NULL_HANDLE;
+		VkSurfaceKHR _Surface = VK_NULL_HANDLE;
+		VkQueue _graphicsQueue = VK_NULL_HANDLE;
+		VkQueue _presentQueue = VK_NULL_HANDLE;
 
 		const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 		const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };

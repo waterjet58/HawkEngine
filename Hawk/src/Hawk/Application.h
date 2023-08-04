@@ -9,15 +9,18 @@
 #include "Renderer/GraphicsContext.h"
 #include "ECS/ECSManager.hpp"
 #include "ECS/Systems/SpriteRendererSystem.h"
+#include "Platform/Vulkan/VulkanRenderer.h"
+
 
 namespace Hawk {
-
+	
 	class Application
 	{
 	private:
 		std::unique_ptr<Window> _window;
+		VulkanRenderer _renderer;
 		ImGUILayer* _imGuiLayer;
-		VulkanContext* _context;
+		VulkanContext _context;
 		std::shared_ptr<ECSManager> _ecsManager;
 		bool running = true;
 		LayerStack _layerStack;
@@ -47,7 +50,8 @@ namespace Hawk {
 		void PushOverlay(Layer* overlay);
 		static Application& Get() { return *s_Instance; }
 		Window& GetWindow() { return *_window; }
-		GraphicsContext& GetGraphicsContext() { return *_context; }
+		GraphicsContext& GetGraphicsContext() { return _context; }
+		std::shared_ptr<SpriteRendererSystem> getSpriteRenderer() { return spriteRenderer; }
 	};
 
 	//To be defined in client

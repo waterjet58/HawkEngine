@@ -1,7 +1,6 @@
 #pragma once
 #include "Platform/Vulkan/VulkanContext.h"
 #include "VulkanRenderer.h"
-#include "Platform/Vulkan/VulkanRenderer.h"
 #include "imgui.h"
 
 namespace Hawk {

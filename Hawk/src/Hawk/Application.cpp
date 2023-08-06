@@ -9,7 +9,6 @@
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <backends/imgui_impl_vulkan.h>
-#include "Platform/Vulkan/VulkanContext.h"
 #include "ECS/Components/Sprite.h"
 
 
@@ -25,32 +24,27 @@ namespace Hawk {
 	{
 		HWK_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
-
-		_ecsManager = std::make_shared<ECSManager>();
+		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
+		_context.init(_window->GetExtent().width, _window->GetExtent().height, static_cast<GLFWwindow*>(_window->GetNativeWindow()));
+		_renderer.init();
+		VulkanImGUI _vulkanImGUI(static_cast<GLFWwindow*>(_window->GetNativeWindow()), _context, _renderer);
+		_vulkanImGUI.initImGUI();
+		//Need to make a static instance to get for the windowsWindow
+		_ecsManager = std::make_shared<ECSManager>(); //Need to make a static instance to get for the windowsWindow
 		_ecsManager->init();
+		//Need to make a static instance to get for the windowsWindow
+		//Need to make a static instance to get for the windowsWindow
+		//Need to make a static instance to get for the windowsWindow
+		//Need to make a static instance to get for the windowsWindow
+		//Need to make a static instance to get for the windowsWindow
 		RegisterComponents();
 		RegisterSystems();
-		
 
-		WindowProperties props;
-		props.Height = 980;
-		props.Width = 1280;
-
-		_window = std::unique_ptr<Window>(Window::Create(props, _ecsManager, _context, _renderer));
-		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
-		//Init VulkanContext
-
-		VulkanContext _context(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
-		_context.init(props.Width, props.Height);
-
-		VulkanRenderer _renderer(&_context);
 		
 		//_window->SetRenderer(&_renderer);
 
 		//_imGuiLayer = new ImGUILayer();
 		//PushOverlay(_imGuiLayer);
-
-		
 
 	}
 
@@ -79,6 +73,14 @@ namespace Hawk {
 
 			
 			_window->Update();
+
+			if (auto commandBuffer = _renderer.beginFrame())
+			{
+				_renderer.beginSwapChainRenderPass(commandBuffer);
+				//renderGameObjects(commandBuffer);
+				_renderer.endSwapChainRenderPass(commandBuffer);
+				_renderer.endFrame();
+			}
 
 			//spriteRenderer->Update(0.0f);
 
@@ -135,7 +137,6 @@ namespace Hawk {
 		for (auto& layer : _layerStack)
 			layer->OnDetach();
 
-		
 	}
 
 	void Application::PushLayer(Layer* layer)

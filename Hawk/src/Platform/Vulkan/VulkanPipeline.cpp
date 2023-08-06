@@ -2,6 +2,8 @@
 #include "VulkanPipeline.h"
 #include "Hawk/Renderer/Model.h"
 
+#include <fstream>
+
 namespace Hawk {
 	VulkanPipeline::VulkanPipeline(
 		VulkanContext& context, const std::string& vertFilePath, 

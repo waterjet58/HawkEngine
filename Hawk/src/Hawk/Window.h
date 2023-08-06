@@ -5,7 +5,6 @@
 #include "vulkan/vulkan.h"
 #include "ECS/ECSManager.hpp"
 #include "Platform/Vulkan/VulkanContext.h"
-#include "Platform/Vulkan/VulkanRenderer.h"
 
 namespace Hawk {
 
@@ -48,7 +47,7 @@ namespace Hawk {
 		virtual bool wasWindowResized() const = 0;
 		virtual void resetWindowResized() = 0;
 
-		static Window* Create(const WindowProperties& properties = WindowProperties(), std::shared_ptr<ECSManager> manager = nullptr, VulkanContext& context, VulkanRenderer& renderer);
+		static Window* Create(const std::string& Title, const uint32_t Width, const uint32_t Height, VulkanContext& _context);
 		
 	};
 

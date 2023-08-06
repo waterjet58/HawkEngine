@@ -1,6 +1,6 @@
 #include "hwkPrecompiledHeader.h"
 #include "VulkanSwapChain.h"
-
+#include "Hawk/Log.h"
 
 namespace Hawk {
 

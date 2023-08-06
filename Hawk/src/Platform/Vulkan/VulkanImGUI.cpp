@@ -5,10 +5,7 @@
 namespace Hawk {
 
 	VulkanImGUI::VulkanImGUI(GLFWwindow* window,VulkanContext& context, VulkanRenderer& renderer)
-		:_window(window), _context(context), _renderer(renderer)
-	{
-		initImGUI();
-	}
+		:_window(window), _context(context), _renderer(renderer) { }
 
 	VulkanImGUI::~VulkanImGUI() 
 	{

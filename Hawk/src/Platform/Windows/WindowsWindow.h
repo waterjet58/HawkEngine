@@ -14,7 +14,7 @@ namespace Hawk {
 	class WindowsWindow : public Window
 	{
 	public:
-		WindowsWindow(const WindowProperties& properties, std::shared_ptr<ECSManager> manager, VulkanContext& context, VulkanRenderer& renderer);
+		WindowsWindow(const WindowProperties& properties, VulkanContext& _context);
 		virtual ~WindowsWindow();
 
 		void Update() override;
@@ -27,18 +27,17 @@ namespace Hawk {
 		inline bool wasWindowResized() const override { return _framebufferResize; }
 		inline void resetWindowResized() override { _framebufferResize = false; }
 		void SetVSync(bool enabled) override;
-
 		bool IsVSync() const override;
 		virtual void* GetNativeWindow() const { return _window; }
 
 	private:
 		GLFWwindow* _window;
 		VulkanContext& _context;
-		VulkanRenderer& _renderer;
+		VulkanRenderer* _renderer;
 		std::unique_ptr<VulkanPipeline> _pipeline;
 		std::shared_ptr<Model> _model;
-		std::shared_ptr<ECSManager> _ecsManager;
 		std::shared_ptr<SpriteRendererSystem> _spriteRenderer;
+		std::shared_ptr<ECSManager> _ecsManager;
 		VkPipelineLayout _pipelineLayout;
 		VkCommandBuffer _imGuiBuffer;
 		VulkanImGUI* _vulkanImGUI;

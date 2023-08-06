@@ -1,7 +1,6 @@
 #include <Hawk.h>
 #include "imgui/imgui.h"
 
-
 class ExampleLayer : public Hawk::Layer
 {
 public:

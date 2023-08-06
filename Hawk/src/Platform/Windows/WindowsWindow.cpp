@@ -24,13 +24,13 @@ namespace Hawk {
 
 	static bool _GLFWInit = false;
 
-	Window* Window::Create(const WindowProperties& properties, std::shared_ptr<ECSManager> manager, VulkanContext& context, VulkanRenderer& renderer)
+	Window* Window::Create(const std::string& Title ,const uint32_t Width, const uint32_t Height, VulkanContext& context)
 	{
-		return new WindowsWindow(properties, manager, context, renderer);
+		WindowProperties properties(Title, Width, Height);
+		return new WindowsWindow(properties, context);
 	}
 
-	WindowsWindow::WindowsWindow(const WindowProperties& properties, std::shared_ptr<ECSManager> manager, VulkanContext& context, VulkanRenderer& renderer) 
-		: _ecsManager(manager), _context(context), _renderer(renderer)
+	WindowsWindow::WindowsWindow(const WindowProperties& properties, VulkanContext& context) : _context(context)
 	{
 		Init(properties);
 	}
@@ -49,7 +49,7 @@ namespace Hawk {
 		HWK_CORE_INFO("Creating Window {0} ({1}, {2})", properties.Title, properties.Width, properties.Height);
 		
 		//INIT ALL NEEDED SYSTEMS FOR RENDERING
-		_spriteRenderer = Application::Get().getSpriteRenderer();
+		//_spriteRenderer = Application::Get().getSpriteRenderer();
 
 		if (!_GLFWInit)
 		{
@@ -64,9 +64,6 @@ namespace Hawk {
 		_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, _data.Title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(_window, this);
 		glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
-
-		loadModels();
-		createPipelineLayout();
 
 		//Set the current context to this current window
 		glfwMakeContextCurrent(_window);
@@ -164,18 +161,14 @@ namespace Hawk {
 
 			MouseMovedEvent event((float)xOffset, (float)yOffset);
 			data.EventCallback(event);
-		});
+		});		
 
-		//Need to init IMGUI after all of the call backs are created to not overwrite the callbacks that ImGui creates
-		//_vulkanImGUI = new VulkanImGUI(_window, _context, _renderer);
-
-	}
-
-	void WindowsWindow::initImGUI()
-	{
-
+		//createPipelineLayout();
+		//createPipeline();
+		//loadModels();
 
 	}
+
 
 	void WindowsWindow::Shutdown()
 	{
@@ -188,13 +181,13 @@ namespace Hawk {
 	void WindowsWindow::Update()
 	{
 		glfwPollEvents();
-		if (auto commandBuffer = _renderer.beginFrame())
+		/*if (auto commandBuffer = _renderer->beginFrame())
 		{
-			_renderer.beginSwapChainRenderPass(commandBuffer);
+			_renderer->beginSwapChainRenderPass(commandBuffer);
 			renderGameObjects(commandBuffer);
-			_renderer.endSwapChainRenderPass(commandBuffer);
-			_renderer.endFrame();
-		}
+			_renderer->endSwapChainRenderPass(commandBuffer);
+			_renderer->endFrame();
+		}*/
 		//glfwSwapBuffers(_window);
 	}
 
@@ -233,7 +226,7 @@ namespace Hawk {
 		{{0.1f, 0.1f}, { 0.0f, 1.0f, 0.0f }}, //Green vertice
 		{{-0.1f, 0.1f}, { 0.0f, 0.0f, 1.0f }} //Blue vertice
 		};
-		_model = std::make_shared<Model>(*_context, vertices);
+		_model = std::make_shared<Model>(_context, vertices);
 
 		for (int i = 0; i < 50; i++)
 		{
@@ -243,8 +236,7 @@ namespace Hawk {
 			Sprite sprite;
 
 			sprite.color = { (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX };
-			sprite.transform.position.x = (float)rand()/RAND_MAX * 1.5 - .8f;
-			sprite.transform.position.y = (float)rand()/RAND_MAX * 1.5 - .8f;
+
 			sprite.model = _model;
 			sprite.transform.scale = { ((float)rand() / RAND_MAX) * 4, ((float)rand() / RAND_MAX) * 4 };
 			sprite.transform.rotation = ((float)rand() / RAND_MAX) * glm::two_pi<float>();
@@ -280,7 +272,7 @@ namespace Hawk {
 	{
 		PipelineConfigInfo pipelineConfig{};
 		VulkanPipeline::defaultPipelineConfigInfo(pipelineConfig);
-		pipelineConfig.renderPass = _renderer.getSwapChainRenderPass();
+		pipelineConfig.renderPass = _renderer->getSwapChainRenderPass();
 		pipelineConfig.pipelineLayout = _pipelineLayout;
 
 		_pipeline = std::make_unique<VulkanPipeline>(_context, "../Hawk/src/Shaders/simple_shader.vert.spv",

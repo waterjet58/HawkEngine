@@ -53,10 +53,7 @@ namespace Hawk {
 		}
 	}
 
-	VulkanContext::VulkanContext(GLFWwindow* window)
-	{
-		_window = window;
-	}
+	VulkanContext::VulkanContext(){}
 
 	VulkanContext::~VulkanContext() {}
 
@@ -69,8 +66,9 @@ namespace Hawk {
 			abort();
 	}
 
-	void VulkanContext::init(uint32_t width, uint32_t height)
+	void VulkanContext::init(uint32_t width, uint32_t height, GLFWwindow* window)
 	{
+		_window = window;
 		createInstance();
 		setupDebugMessenger();
 		createWindowSurface();

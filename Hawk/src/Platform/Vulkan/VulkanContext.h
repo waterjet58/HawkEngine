@@ -4,8 +4,6 @@
 #include "backends/imgui_impl_vulkan.h"
 #include "Hawk/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
-#include "Hawk/Window.h"
-
 
 
 namespace Hawk {
@@ -34,13 +32,17 @@ namespace Hawk {
 		const bool enableValidationLayers = true;
 #endif
 
-		VulkanContext(GLFWwindow* window);
+		VulkanContext();
 
 		~VulkanContext();
 
+		VulkanContext(const VulkanContext&) = delete;
+
+		VulkanContext& operator=(const VulkanContext&) = delete;
+
 		static void check_vk_result(VkResult err);
 
-		void init(uint32_t width, uint32_t height) override;
+		void init(uint32_t width, uint32_t height, GLFWwindow* window) override;
 
 		void cleanup() override;
 

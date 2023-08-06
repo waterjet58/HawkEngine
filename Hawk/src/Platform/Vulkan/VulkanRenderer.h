@@ -1,16 +1,19 @@
 #pragma once
-#include <Hawk.h>
 #include "VulkanSwapChain.h"
 #include "Hawk/ECS/Systems/SpriteRendererSystem.h"
-#include <Platform/Windows/WindowsWindow.h>
-
+#include "Hawk/Window.h"
 
 namespace Hawk {
 
 	class VulkanRenderer {
 	public:
-		VulkanRenderer(VulkanContext* context);
+		VulkanRenderer(VulkanContext& context, Window* window);
 		~VulkanRenderer();
+
+		void init();
+
+		VulkanRenderer(const VulkanRenderer&) = delete;
+		VulkanRenderer& operator=(const VulkanRenderer&) = delete;
 
 		VkCommandBuffer beginFrame();
 		void endFrame();
@@ -28,7 +31,8 @@ namespace Hawk {
 		uint32_t getImageCount() const { return static_cast<uint32_t>(_swapChain->imageCount()); }
 
 	private:
-		VulkanContext* _context;
+		VulkanContext& _context;
+		Window* _window;
 		std::unique_ptr<VulkanSwapChain> _swapChain;
 		std::shared_ptr<ECSManager> _ecsManager;
 		std::shared_ptr<SpriteRendererSystem> _spriteRenderer;

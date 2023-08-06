@@ -3,7 +3,9 @@
 
 namespace Hawk {
 
-	VulkanRenderer::VulkanRenderer(VulkanContext* context) : _context(context) {}
+	VulkanRenderer::VulkanRenderer(VulkanContext& context, Window* window) : _context(context), _window(window) {
+		
+	}
 
 	VulkanRenderer::~VulkanRenderer()
 	{

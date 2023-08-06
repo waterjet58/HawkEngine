@@ -20,7 +20,7 @@ namespace Hawk {
 		Window* _window{ Window::Create("HwkEngine", 1280, 920, _context) };
 		VulkanRenderer _renderer{ _context, _window };
 		ImGUILayer* _imGuiLayer;
-		VulkanImGUI _vulkanImGUI{ static_cast<GLFWwindow*>(_window->GetNativeWindow()), _context, _renderer };
+		VulkanImGUI* _vulkanImGUI;
 		std::shared_ptr<ECSManager> _ecsManager;
 		std::shared_ptr<Model> _model;
 		bool running = true;

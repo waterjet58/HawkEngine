@@ -31,8 +31,8 @@ namespace Hawk {
 
 		_renderer.init();
 
-		VulkanImGUI _vulkanImGUI(static_cast<GLFWwindow*>(_window->GetNativeWindow()), _context, _renderer);
-		_vulkanImGUI.initImGUI();
+		_vulkanImGUI = new VulkanImGUI(static_cast<GLFWwindow*>(_window->GetNativeWindow()), _context, _renderer);
+		_vulkanImGUI->initImGUI();
 
 		_ecsManager = std::make_shared<ECSManager>(); //Need to make a static instance to get for the windowsWindow
 		_ecsManager->init();
@@ -96,7 +96,12 @@ namespace Hawk {
 			{
 				_renderer.beginSwapChainRenderPass(commandBuffer);
 				
+				
+
 				spriteRenderer->Update(0.0f, commandBuffer);
+
+				ImDrawData* draw_data = ImGui::GetDrawData();
+				ImGui_ImplVulkan_RenderDrawData(draw_data, commandBuffer);
 
 				_renderer.endSwapChainRenderPass(commandBuffer);
 				_renderer.endFrame();

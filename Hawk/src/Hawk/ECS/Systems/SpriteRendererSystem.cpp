@@ -43,6 +43,9 @@ namespace Hawk {
 			sprite.model->draw(buffer);
 			HWK_CORE_INFO("Render Entity: {0}", entity);
 		}
+
+		
+
 	}
 
 	void SpriteRendererSystem::createPipelineLayout()

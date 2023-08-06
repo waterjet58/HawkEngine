@@ -192,8 +192,7 @@ namespace Hawk {
 		_data.VSync = state;*/
 	}
 
-	//ImDrawData *draw_data = ImGui::GetDrawData();
-	//ImGui_ImplVulkan_RenderDrawData(draw_data, _commandBuffers[imageIndex]);
+	
 
 	void WindowsWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height)
 	{
@@ -202,17 +201,6 @@ namespace Hawk {
 		curWindow->_data.Width = width;
 		curWindow->_data.Height = height;
 	}
-
-	/*
-	void WindowsWindow::loadModels()
-	{
-		
-
-		
-	}
-	*/
-
-	
 
 	bool WindowsWindow::IsVSync() const
 	{

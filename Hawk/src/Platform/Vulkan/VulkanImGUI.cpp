@@ -4,7 +4,7 @@
 
 namespace Hawk {
 
-	VulkanImGUI::VulkanImGUI(GLFWwindow* window,VulkanContext& context, VulkanRenderer& renderer)
+	VulkanImGUI::VulkanImGUI(GLFWwindow* window, VulkanContext& context, VulkanRenderer& renderer)
 		:_window(window), _context(context), _renderer(renderer) { }
 
 	VulkanImGUI::~VulkanImGUI() 
@@ -44,7 +44,6 @@ namespace Hawk {
 		VkCommandBuffer command_buffer = _context.beginSingleTimeCommands();
 		ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
 		_context.endSingleTimeCommands(command_buffer);
-
 		
 	}
 

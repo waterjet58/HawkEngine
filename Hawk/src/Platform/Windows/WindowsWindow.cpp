@@ -47,9 +47,6 @@ namespace Hawk {
 		_data.Height = properties.Height;
 		
 		HWK_CORE_INFO("Creating Window {0} ({1}, {2})", properties.Title, properties.Width, properties.Height);
-		
-		//INIT ALL NEEDED SYSTEMS FOR RENDERING
-		//_spriteRenderer = Application::Get().getSpriteRenderer();
 
 		if (!_GLFWInit)
 		{
@@ -60,6 +57,7 @@ namespace Hawk {
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
 		//Create the GLFW window
 		_window = glfwCreateWindow((int)properties.Width, (int)properties.Height, _data.Title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(_window, this);
@@ -163,17 +161,10 @@ namespace Hawk {
 			data.EventCallback(event);
 		});		
 
-		//createPipelineLayout();
-		//createPipeline();
-		//loadModels();
-
 	}
-
 
 	void WindowsWindow::Shutdown()
 	{
-		vkDestroyPipelineLayout(_context.getDevice(), _pipelineLayout, _context.getAllocator());
-
 		glfwDestroyWindow(_window);
 		glfwTerminate();
 	}
@@ -204,13 +195,6 @@ namespace Hawk {
 	//ImDrawData *draw_data = ImGui::GetDrawData();
 	//ImGui_ImplVulkan_RenderDrawData(draw_data, _commandBuffers[imageIndex]);
 
-	void WindowsWindow::renderGameObjects(VkCommandBuffer buffer)
-	{
-		_pipeline->bind(buffer);
-
-		_spriteRenderer->Update(.0f, buffer, _pipelineLayout);
-	}
-
 	void WindowsWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height)
 	{
 		auto curWindow = reinterpret_cast<WindowsWindow*>(glfwGetWindowUserPointer(window));
@@ -219,66 +203,16 @@ namespace Hawk {
 		curWindow->_data.Height = height;
 	}
 
+	/*
 	void WindowsWindow::loadModels()
 	{
-		std::vector<Model::Vertex> vertices{
-		{{0.0f, -0.1f}, { 1.0f, 0.0f, 0.0f }}, //Red vertice
-		{{0.1f, 0.1f}, { 0.0f, 1.0f, 0.0f }}, //Green vertice
-		{{-0.1f, 0.1f}, { 0.0f, 0.0f, 1.0f }} //Blue vertice
-		};
-		_model = std::make_shared<Model>(_context, vertices);
-
-		for (int i = 0; i < 50; i++)
-		{
-			Entity entity;
-
-			entity = _ecsManager->createEntity();
-			Sprite sprite;
-
-			sprite.color = { (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX };
-
-			sprite.model = _model;
-			sprite.transform.scale = { ((float)rand() / RAND_MAX) * 4, ((float)rand() / RAND_MAX) * 4 };
-			sprite.transform.rotation = ((float)rand() / RAND_MAX) * glm::two_pi<float>();
-
-			_ecsManager->addComponent<Sprite>(entity, sprite);
-		}
+		
 
 		
 	}
+	*/
 
-	void WindowsWindow::createPipelineLayout()
-	{
-		VkPushConstantRange pushConstantRange{};
-		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-		pushConstantRange.offset = 0;
-		pushConstantRange.size = sizeof(SimplePushConstantData);
-
-
-		VkPipelineLayoutCreateInfo layoutCreateInfo{};
-		layoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		layoutCreateInfo.setLayoutCount = 0;
-		layoutCreateInfo.pSetLayouts = nullptr;
-		layoutCreateInfo.pushConstantRangeCount = 1;
-		layoutCreateInfo.pPushConstantRanges = &pushConstantRange;
-		if (vkCreatePipelineLayout(_context.getDevice(), &layoutCreateInfo, _context.getAllocator(), &_pipelineLayout) != VK_SUCCESS)
-		{
-			throw std::runtime_error("Pipeline layout failed to be created");
-		}
-
-	}
-
-	void WindowsWindow::createPipeline()
-	{
-		PipelineConfigInfo pipelineConfig{};
-		VulkanPipeline::defaultPipelineConfigInfo(pipelineConfig);
-		pipelineConfig.renderPass = _renderer->getSwapChainRenderPass();
-		pipelineConfig.pipelineLayout = _pipelineLayout;
-
-		_pipeline = std::make_unique<VulkanPipeline>(_context, "../Hawk/src/Shaders/simple_shader.vert.spv",
-			"../Hawk/src/Shaders/simple_shader.frag.spv", pipelineConfig);
-
-	}
+	
 
 	bool WindowsWindow::IsVSync() const
 	{

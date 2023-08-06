@@ -24,27 +24,45 @@ namespace Hawk {
 	{
 		HWK_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
+
 		_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
+
 		_context.init(_window->GetExtent().width, _window->GetExtent().height, static_cast<GLFWwindow*>(_window->GetNativeWindow()));
+
 		_renderer.init();
+
 		VulkanImGUI _vulkanImGUI(static_cast<GLFWwindow*>(_window->GetNativeWindow()), _context, _renderer);
 		_vulkanImGUI.initImGUI();
-		//Need to make a static instance to get for the windowsWindow
+
 		_ecsManager = std::make_shared<ECSManager>(); //Need to make a static instance to get for the windowsWindow
 		_ecsManager->init();
-		//Need to make a static instance to get for the windowsWindow
-		//Need to make a static instance to get for the windowsWindow
-		//Need to make a static instance to get for the windowsWindow
-		//Need to make a static instance to get for the windowsWindow
-		//Need to make a static instance to get for the windowsWindow
 		RegisterComponents();
 		RegisterSystems();
 
-		
-		//_window->SetRenderer(&_renderer);
-
 		//_imGuiLayer = new ImGUILayer();
 		//PushOverlay(_imGuiLayer);
+
+		std::vector<Model::Vertex> vertices{
+			{{0.0f, -0.1f}, { 1.0f, 0.0f, 0.0f }}, //Red vertice
+			{ {0.1f, 0.1f}, { 0.0f, 1.0f, 0.0f } }, //Green vertice
+			{ {-0.1f, 0.1f}, { 0.0f, 0.0f, 1.0f } } //Blue vertice
+		};
+		_model = std::make_shared<Model>(_context, vertices);
+
+		for (int i = 0; i < 50; i++)
+		{
+			Entity entity;
+			entity = _ecsManager->createEntity();
+			Sprite sprite;
+
+			sprite.color = { (float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX };
+
+			sprite.model = _model;
+			sprite.transform.scale = { ((float)rand() / RAND_MAX) * 4, ((float)rand() / RAND_MAX) * 4 };
+			sprite.transform.rotation = ((float)rand() / RAND_MAX) * glm::two_pi<float>();
+
+			_ecsManager->addComponent<Sprite>(entity, sprite);
+		}
 
 	}
 
@@ -77,12 +95,12 @@ namespace Hawk {
 			if (auto commandBuffer = _renderer.beginFrame())
 			{
 				_renderer.beginSwapChainRenderPass(commandBuffer);
-				//renderGameObjects(commandBuffer);
+				
+				spriteRenderer->Update(0.0f, commandBuffer);
+
 				_renderer.endSwapChainRenderPass(commandBuffer);
 				_renderer.endFrame();
 			}
-
-			//spriteRenderer->Update(0.0f);
 
 			clock_t endFrame = clock();
 
@@ -129,7 +147,7 @@ namespace Hawk {
 			_ecsManager->setSystemSignature<SpriteRendererSystem>(signature);
 		}
 
-		spriteRenderer->Init(_ecsManager);
+		spriteRenderer->Init(_ecsManager, &_context, _renderer.getSwapChainRenderPass());
 	}
 
 	void Application::cleanup()

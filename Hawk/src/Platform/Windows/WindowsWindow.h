@@ -33,24 +33,11 @@ namespace Hawk {
 	private:
 		GLFWwindow* _window;
 		VulkanContext& _context;
-		VulkanRenderer* _renderer;
-		std::unique_ptr<VulkanPipeline> _pipeline;
-		std::shared_ptr<Model> _model;
-		std::shared_ptr<SpriteRendererSystem> _spriteRenderer;
-		std::shared_ptr<ECSManager> _ecsManager;
-		VkPipelineLayout _pipelineLayout;
-		VkCommandBuffer _imGuiBuffer;
-		VulkanImGUI* _vulkanImGUI;
 		bool _framebufferResize = false;
 
 		virtual void Init(const WindowProperties& properties);
-		void initImGUI();
-		void loadModels();
 		virtual void Shutdown();
 		static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
-		void renderGameObjects(VkCommandBuffer buffer);
-		void createPipelineLayout();
-		void createPipeline();
 
 		struct windowData {
 			std::string Title = "";

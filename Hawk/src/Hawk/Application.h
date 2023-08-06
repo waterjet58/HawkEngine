@@ -9,6 +9,7 @@
 #include "Renderer/GraphicsContext.h"
 #include "ECS/Systems/SpriteRendererSystem.h"
 #include "Platform/Vulkan/VulkanImGUI.h"
+#include "Renderer/Model.h"
 
 namespace Hawk {
 	
@@ -21,6 +22,7 @@ namespace Hawk {
 		ImGUILayer* _imGuiLayer;
 		VulkanImGUI _vulkanImGUI{ static_cast<GLFWwindow*>(_window->GetNativeWindow()), _context, _renderer };
 		std::shared_ptr<ECSManager> _ecsManager;
+		std::shared_ptr<Model> _model;
 		bool running = true;
 		LayerStack _layerStack;
 		static Application* s_Instance;

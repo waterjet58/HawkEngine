@@ -2,14 +2,16 @@
 
 #include "Core.h"
 #include "Window.h"
-#include "Events/Event.h"
-#include "Hawk/LayerStack.h"
-#include "Events/ApplicationEvent.h"
+#include "Hawk/Events/Event.h"
+#include "Hawk/Core/LayerStack.h"
+#include "Hawk/Events/ApplicationEvent.h"
 #include "Hawk/ImGui/ImGUILayer.h"
-#include "Renderer/GraphicsContext.h"
-#include "ECS/Systems/SpriteRendererSystem.h"
+#include "Hawk/Renderer/GraphicsContext.h"
+#include "Hawk/ECS/Systems/SpriteRendererSystem.h"
+#include <Hawk/ECS/Systems/MeshRendererSystem.h>
 #include "Platform/Vulkan/VulkanImGUI.h"
-#include "Renderer/Model.h"
+#include "Hawk/Renderer/Model.h"
+#include "Hawk/Core/Camera.h"
 
 namespace Hawk {
 	
@@ -27,10 +29,12 @@ namespace Hawk {
 		LayerStack _layerStack;
 		static Application* s_Instance;
 		bool OnWindowClose(WindowCloseEvent& event);
-
+		std::unique_ptr<Model> createCubeModel(VulkanContext& device, glm::vec3 offset);
+		float _lastFrameTime = 0.0f;
+		float totalTime = 0.f;
 		//SYSTEMS
 		std::shared_ptr<SpriteRendererSystem> spriteRenderer;
-
+		std::shared_ptr<MeshRendererSystem> meshRenderer;
 		//SYSTEMS
 
 
@@ -39,8 +43,6 @@ namespace Hawk {
 	public:
 		Application();
 		virtual ~Application();
-
-		double clockToMilliseconds(clock_t ticks);
 
 		void Run();
 		void cleanup();
@@ -54,6 +56,8 @@ namespace Hawk {
 		VulkanContext& GetGraphicsContext() { return _context; }
 		std::shared_ptr<SpriteRendererSystem> getSpriteRenderer() { return spriteRenderer; }
 		std::shared_ptr<ECSManager> getECSMananger() {	return _ecsManager; }
+		VulkanRenderer& getRenderer() { return _renderer; }
+
 	};
 
 	//To be defined in client

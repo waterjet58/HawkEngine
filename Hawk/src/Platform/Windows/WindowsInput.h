@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hawk/Input.h"
+#include "Hawk/Core/Input.h"
 
 namespace Hawk {
 

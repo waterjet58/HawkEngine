@@ -1,7 +1,7 @@
 #include "hwkPrecompiledHeader.h"
 #include "VulkanContext.h"
 #include "backends/imgui_impl_vulkan.h"
-#include "Hawk/Core.h"
+#include "Hawk/Core/Core.h"
 #include <backends/imgui_impl_glfw.h>
 
 
@@ -472,6 +472,8 @@ namespace Hawk {
 		vkBindBufferMemory(_Device, buffer, bufferMemory, 0);
 	}
 
+	
+
 	VkCommandBuffer VulkanContext::beginSingleTimeCommands() {
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -502,6 +504,18 @@ namespace Hawk {
 		vkQueueWaitIdle(_graphicsQueue);
 
 		vkFreeCommandBuffers(_Device, _commandPool, 1, &commandBuffer);
+	}
+
+	void VulkanContext::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+		VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+		VkBufferCopy copyRegion{};
+		copyRegion.srcOffset = 0;  // Optional
+		copyRegion.dstOffset = 0;  // Optional
+		copyRegion.size = size;
+		vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+		endSingleTimeCommands(commandBuffer);
 	}
 
 	void VulkanContext::cleanup()

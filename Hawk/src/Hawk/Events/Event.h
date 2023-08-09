@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Hawk/Core.h"
-#include "Hawk/Log.h"
+#include "Hawk/Core/Core.h"
+#include "Hawk/Core/Log.h"
 
 #include <string>
 #include <sstream>

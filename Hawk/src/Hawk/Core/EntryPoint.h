@@ -1,4 +1,6 @@
 #pragma once
+#include "Log.h"
+#include "Application.h"
 
 #ifdef HWK_PLATFORM_WINDOWS // If the application is being ran in windows
 

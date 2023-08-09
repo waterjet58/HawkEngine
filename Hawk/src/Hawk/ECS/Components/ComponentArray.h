@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 #include "Hawk/ECS/Entity.h"
-#include "Hawk/Core.h"
+#include "Hawk/Core/Core.h"
 
 namespace Hawk {
 

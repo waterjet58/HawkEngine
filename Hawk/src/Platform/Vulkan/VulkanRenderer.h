@@ -1,7 +1,7 @@
 #pragma once
 #include "VulkanSwapChain.h"
 #include "Hawk/ECS/Systems/SpriteRendererSystem.h"
-#include "Hawk/Window.h"
+#include "Hawk/Core/Window.h"
 
 namespace Hawk {
 
@@ -22,10 +22,16 @@ namespace Hawk {
 		void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
 	
 		VkRenderPass getSwapChainRenderPass() const { return _swapChain->getRenderPass(); }
+		float getAspectRatio() const { return _swapChain->extentAspectRatio(); }
 		bool isFrameInProgress() const { return _isFrameStarted; }
-		VkCommandBuffer getCurrentCommandBuffer() const {
+		VkCommandBuffer getCurrentCommandBuffer() {
 			HWK_ASSERT(_isFrameStarted && "Cannot get command buffer when frame is not in progress");
-			return _commandBuffers[_currentImageIndex];
+			return _commandBuffers[_currentFrameIndex];
+		}
+
+		int getFrameIndex() const {
+			HWK_ASSERT(_isFrameStarted && "Cannot get frame index when frame is not in progress");
+			return _currentFrameIndex;
 		}
 
 		uint32_t getImageCount() const { return static_cast<uint32_t>(_swapChain->imageCount()); }
@@ -38,8 +44,9 @@ namespace Hawk {
 		std::shared_ptr<SpriteRendererSystem> _spriteRenderer;
 		std::vector<VkCommandBuffer> _commandBuffers;
 
-		uint32_t _currentImageIndex{false};
-		bool _isFrameStarted{0};
+		uint32_t _currentImageIndex;
+		int _currentFrameIndex{0};
+		bool _isFrameStarted;
 
 		void recreateSwapChain();
 		void createCommandBuffers();

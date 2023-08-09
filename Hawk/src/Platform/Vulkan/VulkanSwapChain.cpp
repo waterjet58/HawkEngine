@@ -1,6 +1,6 @@
 #include "hwkPrecompiledHeader.h"
 #include "VulkanSwapChain.h"
-#include "Hawk/Log.h"
+#include "Hawk/Core/Log.h"
 
 namespace Hawk {
 
@@ -298,6 +298,7 @@ void VulkanSwapChain::createFramebuffers() {
 
 void VulkanSwapChain::createDepthResources() {
   VkFormat depthFormat = findDepthFormat();
+  swapChainDepthFormat = depthFormat;
   VkExtent2D swapChainExtent = getSwapChainExtent();
 
   depthImages.resize(imageCount());

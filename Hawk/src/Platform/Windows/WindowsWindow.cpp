@@ -18,7 +18,7 @@
 #include <Hawk/ECS/Components/Sprite.h>
 #include <Hawk/ECS/Entity.h>
 #include <Hawk/ECS/Systems/SpriteRendererSystem.h>
-#include <Hawk/Application.h>
+#include <Hawk/Core/Application.h>
 
 namespace Hawk {
 

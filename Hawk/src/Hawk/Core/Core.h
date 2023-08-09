@@ -18,6 +18,6 @@
 
 #define HWK_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
-#include "Hawk/Log.h"
+#include "Hawk/Core/Log.h"
 
 

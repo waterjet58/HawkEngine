@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hawk/Core.h"
+#include "Hawk/Core/Core.h"
 #include "Layer.h"
 
 #include <vector>

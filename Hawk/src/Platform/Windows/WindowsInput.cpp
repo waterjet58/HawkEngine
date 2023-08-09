@@ -2,7 +2,7 @@
 #include "WindowsInput.h"
 
 #include "GLFW/glfw3.h"
-#include "Hawk/Application.h"
+#include "Hawk/Core/Application.h"
 
 namespace Hawk {
 

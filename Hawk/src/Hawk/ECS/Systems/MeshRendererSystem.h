@@ -4,17 +4,18 @@
 #include <vulkan/vulkan.h>
 #include <Platform/Vulkan/VulkanPipeline.h>
 #include "Hawk/Core/Timestep.h"
+#include "Hawk/Core/Camera.h"
 
 namespace Hawk {
-	
-	class SpriteRendererSystem : public System
+
+	class MeshRendererSystem : public System
 	{
 	public:
 		void Init(std::shared_ptr<ECSManager> manager, VulkanContext* context, VkRenderPass renderPass);
 
-		void Update(Timestep dt, VkCommandBuffer buffer);
+		void Update(Timestep dt, VkCommandBuffer buffer, const Camera& camera);
 
-		~SpriteRendererSystem();
+		~MeshRendererSystem();
 	private:
 		std::shared_ptr<ECSManager> _manager;
 		std::unique_ptr<VulkanPipeline> _pipeline;
@@ -26,5 +27,5 @@ namespace Hawk {
 
 		void createPipeline(VkRenderPass renderPass);
 	};
-	
+
 }

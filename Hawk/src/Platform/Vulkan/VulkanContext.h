@@ -102,6 +102,8 @@ namespace Hawk {
 
 		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
+		void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
 		void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
 		void setupDebugMessenger();

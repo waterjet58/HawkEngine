@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Hawk/Core.h"
+#include "Hawk/Core/Core.h"
 #include "Hawk/Events/Event.h"
 #include "vulkan/vulkan.h"
-#include "ECS/ECSManager.hpp"
+#include "Hawk/ECS/ECSManager.hpp"
 #include "Platform/Vulkan/VulkanContext.h"
 
 namespace Hawk {
@@ -44,7 +44,7 @@ namespace Hawk {
 
 		virtual void* GetNativeWindow() const = 0;
 
-		virtual bool wasWindowResized() const = 0;
+		virtual bool wasWindowResized() = 0;
 		virtual void resetWindowResized() = 0;
 
 		static Window* Create(const std::string& Title, const uint32_t Width, const uint32_t Height, VulkanContext& _context);

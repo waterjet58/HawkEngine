@@ -1,14 +1,16 @@
 #pragma once
 
 //for use by Hawk applications
-#include "Hawk/Application.h"
-#include "Hawk/Log.h"
-#include "Hawk/Layer.h"
+#include "Hawk/Core/Application.h"
+#include "Hawk/Core/Log.h"
+#include "Hawk/Core/Layer.h"
 #include "Hawk/ImGui/ImGUILayer.h"
-#include "Hawk/Input.h"
-#include "Hawk/MouseCodes.h"
-#include "Hawk/KeyCodes.h"
+#include "Hawk/Core/Input.h"
+#include "Hawk/Core/MouseCodes.h"
+#include "Hawk/Core/KeyCodes.h"
+#include "Hawk/Core/Timestep.h"
+#include "Hawk/ECS/Systems/SpriteRendererSystem.h"
 
 // --Entry Point--
-#include "Hawk/EntryPoint.h"
+#include "Hawk/Core/EntryPoint.h"
 // ---------------

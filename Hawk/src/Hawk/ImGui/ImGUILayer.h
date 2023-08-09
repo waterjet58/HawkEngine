@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hawk/Layer.h"
+#include "Hawk/Core/Layer.h"
 #include "Hawk/Events/MouseEvent.h"
 #include "Hawk/Events/KeyEvent.h"
 #include "Hawk/Events/ApplicationEvent.h"

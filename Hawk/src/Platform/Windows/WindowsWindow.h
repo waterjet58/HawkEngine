@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hawk/Window.h"
+#include "Hawk/Core/Window.h"
 #include "Hawk/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
 #include "Platform/Vulkan/VulkanPipeline.h"
@@ -24,7 +24,7 @@ namespace Hawk {
 		VkExtent2D GetExtent() override { return { static_cast<uint32_t>(_data.Width), static_cast<uint32_t>(_data.Height) }; }
 
 		inline void SetEventCallback( const EventCallbackFunction& callback) override { _data.EventCallback = callback; }
-		inline bool wasWindowResized() const override { return _framebufferResize; }
+		inline bool wasWindowResized() override { return _framebufferResize; }
 		inline void resetWindowResized() override { _framebufferResize = false; }
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;

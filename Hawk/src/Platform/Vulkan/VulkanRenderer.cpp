@@ -20,7 +20,7 @@ namespace Hawk {
 
 	void  VulkanRenderer::createCommandBuffers()
 	{
-		_commandBuffers.resize(_swapChain->imageCount());
+		_commandBuffers.resize(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -57,12 +57,11 @@ namespace Hawk {
 		}
 		else
 		{
-			_swapChain = std::make_unique<VulkanSwapChain>(_context, extent, std::move(_swapChain));
-			if (_swapChain->imageCount() != _commandBuffers.size() && _commandBuffers.size() != 0)
-			{
-				ImGui_ImplVulkan_SetMinImageCount(static_cast<uint32_t>(_swapChain->imageCount()));
-				freeCommandBuffers();
-				createCommandBuffers();
+			std::shared_ptr<VulkanSwapChain> oldSwapChain = std::move(_swapChain);
+			_swapChain = std::make_unique<VulkanSwapChain>(_context, extent, oldSwapChain);
+
+			if (!oldSwapChain->compareSwapFormats(*_swapChain.get())) {
+				throw std::runtime_error("Swap chain image(or depth) format has changed!");
 			}
 		}
 
@@ -119,14 +118,13 @@ namespace Hawk {
 		{
 			_window->resetWindowResized();
 			recreateSwapChain();
-		}
-
-		if (result != VK_SUCCESS)
+		} else if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to present swap chain image!");
 		}
 
 		_isFrameStarted = false;
+		_currentFrameIndex = (_currentFrameIndex + 1) % VulkanSwapChain::MAX_FRAMES_IN_FLIGHT;
 	}
 
 	void VulkanRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)

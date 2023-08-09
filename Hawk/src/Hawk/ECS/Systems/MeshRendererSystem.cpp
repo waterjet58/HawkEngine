@@ -1,11 +1,12 @@
 #include "hwkPrecompiledHeader.h"
-#include "SpriteRendererSystem.h"
-#include "Hawk/ECS/Components/Sprite.h"
+#include "MeshRendererSystem.h"
+#include "Hawk/ECS/Components/Mesh.h"
 #include <Platform/Vulkan/VulkanPipeline.h>
 
+
 namespace Hawk {
-	
-	void SpriteRendererSystem::Init(std::shared_ptr<ECSManager> manager, VulkanContext* context, VkRenderPass renderPass)
+
+	void MeshRendererSystem::Init(std::shared_ptr<ECSManager> manager, VulkanContext* context, VkRenderPass renderPass)
 	{
 		_context = context;
 		_manager = manager;
@@ -13,44 +14,52 @@ namespace Hawk {
 		createPipeline(renderPass);
 	}
 
-	
 
-	void SpriteRendererSystem::Update(Timestep dt, VkCommandBuffer buffer)
+
+	void MeshRendererSystem::Update(Timestep dt, VkCommandBuffer buffer, const Camera& camera)
 	{
 		_pipeline->bind(buffer);
 
+		auto projectionView = camera.getProjection() * camera.getView();
+
 		for (auto const& entity : _entities)
 		{
-			auto& sprite = _manager->getComponent<Sprite>(entity);
+			auto& mesh = _manager->getComponent<Mesh>(entity);
+			if (entity == 0 || entity == 1)
+			{
+				mesh.transform.rotation.y -= (50.f * dt);
+				mesh.transform.rotation.x -= (50.f * dt);
+			}
+			else {
+				mesh.transform.rotation.y += (50.f * dt);
+				mesh.transform.rotation.x += (50.f * dt);
+			}
 
-			sprite.transform.rotation += (.1f * dt);
-
-			SpriteSimplePushConstantData push{};
-			push.offset = sprite.transform.position;
-			push.color = sprite.color;
-			push.transform = sprite.transform.mat2();
+			MeshSimplePushConstantData push{};
+			push.color = mesh.color;
+			push.transform = projectionView * mesh.transform.mat4();
 
 			vkCmdPushConstants(
 				buffer,
 				_pipelineLayout,
 				VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,
-				sizeof(SpriteSimplePushConstantData),
+				sizeof(MeshSimplePushConstantData),
 				&push);
 
-			sprite.model->bind(buffer);
-			sprite.model->draw(buffer);
-			//HWK_CORE_INFO("Render Entity: {0}", entity);
+			mesh.model->bind(buffer);
+			mesh.model->draw(buffer);
+			//HWK_CORE_INFO("Entity: {0}", entity);
 		}
 
 	}
 
-	void SpriteRendererSystem::createPipelineLayout()
+	void MeshRendererSystem::createPipelineLayout()
 	{
 		VkPushConstantRange pushConstantRange{};
 		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		pushConstantRange.offset = 0;
-		pushConstantRange.size = sizeof(SpriteSimplePushConstantData);
+		pushConstantRange.size = sizeof(MeshSimplePushConstantData);
 
 
 		VkPipelineLayoutCreateInfo layoutCreateInfo{};
@@ -65,7 +74,7 @@ namespace Hawk {
 		}
 	}
 
-	void SpriteRendererSystem::createPipeline(VkRenderPass renderPass)
+	void MeshRendererSystem::createPipeline(VkRenderPass renderPass)
 	{
 		PipelineConfigInfo pipelineConfig{};
 		VulkanPipeline::defaultPipelineConfigInfo(pipelineConfig);
@@ -77,7 +86,7 @@ namespace Hawk {
 
 	}
 
-	SpriteRendererSystem::~SpriteRendererSystem()
+	MeshRendererSystem::~MeshRendererSystem()
 	{
 		vkDestroyPipelineLayout(_context->getDevice(), _pipelineLayout, _context->getAllocator());
 	}

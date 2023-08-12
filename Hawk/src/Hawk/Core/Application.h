@@ -19,8 +19,7 @@ namespace Hawk {
 	{
 	private:
 		VulkanContext _context{};
-		Window* _window{ Window::Create("HwkEngine", 1280, 920, _context) };
-		VulkanRenderer _renderer{ _context, _window };
+		Window* _window{ Window::Create("HwkEngine", 1920, 1080, _context) };
 		ImGUILayer* _imGuiLayer;
 		VulkanImGUI* _vulkanImGUI;
 		std::shared_ptr<ECSManager> _ecsManager;
@@ -29,7 +28,6 @@ namespace Hawk {
 		LayerStack _layerStack;
 		static Application* s_Instance;
 		bool OnWindowClose(WindowCloseEvent& event);
-		std::unique_ptr<Model> createCubeModel(VulkanContext& device, glm::vec3 offset);
 		float _lastFrameTime = 0.0f;
 		float totalTime = 0.f;
 		//SYSTEMS
@@ -47,8 +45,6 @@ namespace Hawk {
 		void Run();
 		void cleanup();
 		void OnEvent(Event& e);
-		void RegisterSystems();
-		void RegisterComponents();
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 		static Application& Get() { return *s_Instance; }
@@ -56,7 +52,6 @@ namespace Hawk {
 		VulkanContext& GetGraphicsContext() { return _context; }
 		std::shared_ptr<SpriteRendererSystem> getSpriteRenderer() { return spriteRenderer; }
 		std::shared_ptr<ECSManager> getECSMananger() {	return _ecsManager; }
-		VulkanRenderer& getRenderer() { return _renderer; }
 
 	};
 

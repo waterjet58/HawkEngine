@@ -4,12 +4,12 @@
 
 namespace Hawk {
 
-VulkanSwapChain::VulkanSwapChain(VulkanContext &contextRef, VkExtent2D extent)
+VulkanSwapChain::VulkanSwapChain(VulkanContext *contextRef, VkExtent2D extent)
     : context{contextRef}, windowExtent{extent} {
     init();
 }
 
-VulkanSwapChain::VulkanSwapChain(VulkanContext& contextRef, VkExtent2D extent, std::shared_ptr<VulkanSwapChain> previousSwapChain)
+VulkanSwapChain::VulkanSwapChain(VulkanContext* contextRef, VkExtent2D extent, std::shared_ptr<VulkanSwapChain> previousSwapChain)
     : context{ contextRef }, windowExtent{ extent }, oldSwapChain(previousSwapChain) {
     init();
 
@@ -29,45 +29,45 @@ void VulkanSwapChain::init()
 
 VulkanSwapChain::~VulkanSwapChain() {
   for (auto imageView : swapChainImageViews) {
-    vkDestroyImageView(context.getDevice(), imageView, nullptr);
+    vkDestroyImageView(context->getDevice(), imageView, nullptr);
   }
   swapChainImageViews.clear();
 
   if (swapChain != nullptr) {
-    vkDestroySwapchainKHR(context.getDevice(), swapChain, nullptr);
+    vkDestroySwapchainKHR(context->getDevice(), swapChain, nullptr);
     swapChain = nullptr;
   }
 
   for (int i = 0; i < depthImages.size(); i++) {
-    vkDestroyImageView(context.getDevice(), depthImageViews[i], nullptr);
-    vkDestroyImage(context.getDevice(), depthImages[i], nullptr);
-    vkFreeMemory(context.getDevice(), depthImageMemorys[i], nullptr);
+    vkDestroyImageView(context->getDevice(), depthImageViews[i], nullptr);
+    vkDestroyImage(context->getDevice(), depthImages[i], nullptr);
+    vkFreeMemory(context->getDevice(), depthImageMemorys[i], nullptr);
   }
 
   for (auto framebuffer : swapChainFramebuffers) {
-    vkDestroyFramebuffer(context.getDevice(), framebuffer, nullptr);
+    vkDestroyFramebuffer(context->getDevice(), framebuffer, nullptr);
   }
 
-  vkDestroyRenderPass(context.getDevice(), renderPass, nullptr);
+  vkDestroyRenderPass(context->getDevice(), renderPass, nullptr);
 
   // cleanup synchronization objects
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-    vkDestroySemaphore(context.getDevice(), renderFinishedSemaphores[i], nullptr);
-    vkDestroySemaphore(context.getDevice(), imageAvailableSemaphores[i], nullptr);
-    vkDestroyFence(context.getDevice(), inFlightFences[i], nullptr);
+    vkDestroySemaphore(context->getDevice(), renderFinishedSemaphores[i], nullptr);
+    vkDestroySemaphore(context->getDevice(), imageAvailableSemaphores[i], nullptr);
+    vkDestroyFence(context->getDevice(), inFlightFences[i], nullptr);
   }
 }
 
 VkResult VulkanSwapChain::acquireNextImage(uint32_t *imageIndex) {
   vkWaitForFences(
-      context.getDevice(),
+      context->getDevice(),
       1,
       &inFlightFences[currentFrame],
       VK_TRUE,
       (std::numeric_limits<uint64_t>::max)());
 
   VkResult result = vkAcquireNextImageKHR(
-      context.getDevice(),
+      context->getDevice(),
       swapChain,
       (std::numeric_limits<uint64_t>::max)(),
       imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
@@ -80,7 +80,7 @@ VkResult VulkanSwapChain::acquireNextImage(uint32_t *imageIndex) {
 VkResult VulkanSwapChain::submitCommandBuffers(
     const VkCommandBuffer *buffers, uint32_t *imageIndex) {
   if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
-    vkWaitForFences(context.getDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(context->getDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
   }
   imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
@@ -100,8 +100,8 @@ VkResult VulkanSwapChain::submitCommandBuffers(
   submitInfo.signalSemaphoreCount = 1;
   submitInfo.pSignalSemaphores = signalSemaphores;
 
-  vkResetFences(context.getDevice(), 1, &inFlightFences[currentFrame]);
-  if (vkQueueSubmit(context.getGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
+  vkResetFences(context->getDevice(), 1, &inFlightFences[currentFrame]);
+  if (vkQueueSubmit(context->getGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
       VK_SUCCESS) {
     throw std::runtime_error("failed to submit draw command buffer!");
   }
@@ -118,7 +118,7 @@ VkResult VulkanSwapChain::submitCommandBuffers(
 
   presentInfo.pImageIndices = imageIndex;
 
-  auto result = vkQueuePresentKHR(context.getPresentQueue(), &presentInfo);
+  auto result = vkQueuePresentKHR(context->getPresentQueue(), &presentInfo);
 
   currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
@@ -128,7 +128,7 @@ VkResult VulkanSwapChain::submitCommandBuffers(
 
 
 void VulkanSwapChain::createSwapChain() {
-  SwapChainSupportDetails swapChainSupport = context.getSwapChainSupport();
+  SwapChainSupportDetails swapChainSupport = context->getSwapChainSupport();
 
   VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
   VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -142,7 +142,7 @@ void VulkanSwapChain::createSwapChain() {
 
   VkSwapchainCreateInfoKHR createInfo = {};
   createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-  createInfo.surface = context.getSurface();
+  createInfo.surface = context->getSurface();
 
   createInfo.minImageCount = imageCount;
   createInfo.imageFormat = surfaceFormat.format;
@@ -151,7 +151,7 @@ void VulkanSwapChain::createSwapChain() {
   createInfo.imageArrayLayers = 1;
   createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-  QueueFamilyIndices indices = context.findPhysicalQueueFamilies();
+  QueueFamilyIndices indices = context->findPhysicalQueueFamilies();
   uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
 
   if (indices.graphicsFamily != indices.presentFamily) {
@@ -172,7 +172,7 @@ void VulkanSwapChain::createSwapChain() {
 
   createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
-  if (vkCreateSwapchainKHR(context.getDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+  if (vkCreateSwapchainKHR(context->getDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
     throw std::runtime_error("failed to create swap chain!");
   }
 
@@ -180,9 +180,9 @@ void VulkanSwapChain::createSwapChain() {
   // allowed to create a swap chain with more. That's why we'll first query the final number of
   // images with vkGetSwapchainImagesKHR, then resize the container and finally call it again to
   // retrieve the handles.
-  vkGetSwapchainImagesKHR(context.getDevice(), swapChain, &imageCount, nullptr);
+  vkGetSwapchainImagesKHR(context->getDevice(), swapChain, &imageCount, nullptr);
   swapChainImages.resize(imageCount);
-  vkGetSwapchainImagesKHR(context.getDevice(), swapChain, &imageCount, swapChainImages.data());
+  vkGetSwapchainImagesKHR(context->getDevice(), swapChain, &imageCount, swapChainImages.data());
 
   swapChainImageFormat = surfaceFormat.format;
   swapChainExtent = extent;
@@ -203,7 +203,7 @@ void VulkanSwapChain::createImageViews() {
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    if (vkCreateImageView(context.getDevice(), &viewInfo, nullptr, &swapChainImageViews[i]) !=
+    if (vkCreateImageView(context->getDevice(), &viewInfo, nullptr, &swapChainImageViews[i]) !=
         VK_SUCCESS) {
       throw std::runtime_error("failed to create texture image view!");
     }
@@ -266,7 +266,7 @@ void VulkanSwapChain::createRenderPass() {
   renderPassInfo.dependencyCount = 1;
   renderPassInfo.pDependencies = &dependency;
 
-  if (vkCreateRenderPass(context.getDevice(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
+  if (vkCreateRenderPass(context->getDevice(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
     throw std::runtime_error("failed to create render pass!");
   }
 }
@@ -287,7 +287,7 @@ void VulkanSwapChain::createFramebuffers() {
     framebufferInfo.layers = 1;
 
     if (vkCreateFramebuffer(
-            context.getDevice(),
+            context->getDevice(),
             &framebufferInfo,
             nullptr,
             &swapChainFramebuffers[i]) != VK_SUCCESS) {
@@ -322,7 +322,7 @@ void VulkanSwapChain::createDepthResources() {
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     imageInfo.flags = 0;
 
-    context.createImageWithInfo(
+    context->createImageWithInfo(
         imageInfo,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         depthImages[i],
@@ -339,7 +339,7 @@ void VulkanSwapChain::createDepthResources() {
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    if (vkCreateImageView(context.getDevice(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
+    if (vkCreateImageView(context->getDevice(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
       throw std::runtime_error("failed to create texture image view!");
     }
   }
@@ -359,11 +359,11 @@ void VulkanSwapChain::createSyncObjects() {
   fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-    if (vkCreateSemaphore(context.getDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
+    if (vkCreateSemaphore(context->getDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
             VK_SUCCESS ||
-        vkCreateSemaphore(context.getDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
+        vkCreateSemaphore(context->getDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
             VK_SUCCESS ||
-        vkCreateFence(context.getDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {
+        vkCreateFence(context->getDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {
       throw std::runtime_error("failed to create synchronization objects for a frame!");
     }
   }
@@ -418,7 +418,7 @@ VkExtent2D VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &cap
 }
 
 VkFormat VulkanSwapChain::findDepthFormat() {
-  return context.findSupportedFormat(
+  return context->findSupportedFormat(
       {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
       VK_IMAGE_TILING_OPTIMAL,
       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);

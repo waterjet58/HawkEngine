@@ -10,6 +10,11 @@
 #include "Hawk/Core/KeyCodes.h"
 #include "Hawk/Core/Timestep.h"
 #include "Hawk/ECS/Systems/SpriteRendererSystem.h"
+#include "Hawk/ECS/Systems/MeshRendererSystem.h"
+#include "Hawk/Core/Camera.h"
+#include "Hawk/ECS/ECSManager.hpp"
+#include "Hawk/Renderer/Model.h"
+#include "Hawk/ECS/Components/Mesh.h"
 
 // --Entry Point--
 #include "Hawk/Core/EntryPoint.h"

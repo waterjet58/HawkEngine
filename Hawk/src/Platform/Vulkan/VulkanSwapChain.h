@@ -8,8 +8,8 @@ class VulkanSwapChain {
 public:
      static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-     VulkanSwapChain(VulkanContext &contextRef, VkExtent2D windowExtent);
-     VulkanSwapChain(VulkanContext &contextRef, VkExtent2D windowExtent, std::shared_ptr<VulkanSwapChain> previousSwapChain);
+     VulkanSwapChain(VulkanContext *contextRef, VkExtent2D windowExtent);
+     VulkanSwapChain(VulkanContext *contextRef, VkExtent2D windowExtent, std::shared_ptr<VulkanSwapChain> previousSwapChain);
      ~VulkanSwapChain();
 
      VulkanSwapChain(const VulkanSwapChain &) = delete;
@@ -64,7 +64,7 @@ private:
      std::vector<VkImage> swapChainImages;
      std::vector<VkImageView> swapChainImageViews;
 
-     VulkanContext &context;
+     VulkanContext *context;
      VkExtent2D windowExtent;
 
      VkSwapchainKHR swapChain;

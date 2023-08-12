@@ -5,7 +5,6 @@
 #include "GLFW/glfw3.h"
 #include "Platform/Vulkan/VulkanPipeline.h"
 #include "Hawk/Renderer/Model.h"
-#include "Platform/Vulkan/VulkanImGUI.h"
 #include <Hawk/ECS/ECSManager.hpp>
 #include "Hawk/ECS/Systems/SpriteRendererSystem.h"
 

@@ -3,7 +3,19 @@
 
 namespace Hawk {
 
-	VulkanRenderer::VulkanRenderer(VulkanContext& context, Window* window) : _context(context), _window(window) {
+	VulkanContext* VulkanRenderer::_context;
+	Window* VulkanRenderer::_window;
+	std::unique_ptr<VulkanSwapChain> VulkanRenderer::_swapChain;
+	std::shared_ptr<ECSManager> VulkanRenderer::_ecsManager;
+	std::shared_ptr<SpriteRendererSystem> VulkanRenderer::_spriteRenderer;
+	std::vector<VkCommandBuffer> VulkanRenderer::_commandBuffers;
+
+	uint32_t VulkanRenderer::_currentImageIndex;
+	int VulkanRenderer::_currentFrameIndex;
+	bool VulkanRenderer::_isFrameStarted;
+
+	VulkanRenderer::VulkanRenderer()
+	{
 		
 	}
 
@@ -12,8 +24,11 @@ namespace Hawk {
 		freeCommandBuffers();
 	}
 
-	void VulkanRenderer::init()
+	void VulkanRenderer::init(VulkanContext* context, Window* window) 
 	{
+		_context = context;
+		_window = window;
+		_currentFrameIndex = 0;
 		recreateSwapChain();
 		createCommandBuffers();
 	}
@@ -25,10 +40,10 @@ namespace Hawk {
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = _context.getCommandPool();
+		allocInfo.commandPool = _context->getCommandPool();
 		allocInfo.commandBufferCount = static_cast<uint32_t>(_commandBuffers.size());
 
-		if (vkAllocateCommandBuffers(_context.getDevice(), &allocInfo, _commandBuffers.data()) != VK_SUCCESS)
+		if (vkAllocateCommandBuffers(_context->getDevice(), &allocInfo, _commandBuffers.data()) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to allocate command buffers!");
 		}
@@ -36,7 +51,7 @@ namespace Hawk {
 
 	void VulkanRenderer::freeCommandBuffers()
 	{
-		vkFreeCommandBuffers(_context.getDevice(), _context.getCommandPool(), static_cast<uint32_t>(_commandBuffers.size()), _commandBuffers.data());
+		vkFreeCommandBuffers(_context->getDevice(), _context->getCommandPool(), static_cast<uint32_t>(_commandBuffers.size()), _commandBuffers.data());
 		_commandBuffers.clear();
 	}
 
@@ -49,7 +64,7 @@ namespace Hawk {
 			glfwWaitEvents();
 		}
 
-		vkDeviceWaitIdle(_context.getDevice());
+		vkDeviceWaitIdle(_context->getDevice());
 
 		if (_swapChain == nullptr)
 		{
@@ -168,5 +183,6 @@ namespace Hawk {
 
 		vkCmdEndRenderPass(commandBuffer);
 	}
+
 
 }

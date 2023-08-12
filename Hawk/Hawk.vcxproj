@@ -176,6 +176,7 @@
     <ClInclude Include="src\Hawk\Math\Quaternion.h" />
     <ClInclude Include="src\Hawk\Core\MouseCodes.h" />
     <ClInclude Include="src\Hawk\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Hawk\Renderer\Renderer.h" />
     <ClInclude Include="src\Hawk\Renderer\Model.h" />
     <ClInclude Include="src\Hawk\Core\Window.h" />
     <ClInclude Include="src\Platform\Vulkan\VulkanContext.h" />

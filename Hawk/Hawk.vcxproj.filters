@@ -1415,6 +1415,7 @@
     <ClInclude Include="src\Hawk\ECS\Systems\MeshRendererSystem.h" />
     <ClInclude Include="src\Hawk\ECS\Components\Mesh.h" />
     <ClInclude Include="src\Hawk\Core\Camera.h" />
+    <ClInclude Include="src\Hawk\Renderer\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hawk\Core\Application.cpp">

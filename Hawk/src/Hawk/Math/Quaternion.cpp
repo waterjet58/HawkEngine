@@ -11,6 +11,7 @@ namespace Hawk {
 	Quaternion::Quaternion(float pw, float px, float py, float pz)
 	: w(pw), x(px), y(py), z(pz) {}
 
+	//Create a quaternion from a vector 3 holding 3 angles in degrees
 	Quaternion::Quaternion(glm::vec3 vector)
 	{
 		float px = vector.x * (glm::pi<float>() / 180.f);

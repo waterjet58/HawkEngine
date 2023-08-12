@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Hawk/Core/Core.h"
 #include "Hawk/Core/Log.h"
 
 #include <string>

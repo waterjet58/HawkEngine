@@ -9,7 +9,7 @@ namespace Hawk {
 
 	public:
 
-		VulkanImGUI(GLFWwindow* window, VulkanContext& context, VulkanRenderer& renderer);
+		VulkanImGUI(GLFWwindow* window, VulkanContext& context);
 		~VulkanImGUI();
 
 		void initImGUI();
@@ -19,7 +19,6 @@ namespace Hawk {
 
 		GLFWwindow* _window;
 		VulkanContext& _context;
-		VulkanRenderer& _renderer;
 		VkDescriptorPool _descriptor;
 	};
 

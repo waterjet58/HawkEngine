@@ -14,8 +14,6 @@ namespace Hawk {
 		createPipeline(renderPass);
 	}
 
-
-
 	void MeshRendererSystem::Update(Timestep dt, VkCommandBuffer buffer, const Camera& camera)
 	{
 		_pipeline->bind(buffer);

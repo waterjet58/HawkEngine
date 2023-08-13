@@ -7,6 +7,9 @@
     <Filter Include="src\Hawk">
       <UniqueIdentifier>{A7561FCF-9323-7ADA-BC3C-6882A868AF68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Hawk\Core">
+      <UniqueIdentifier>{5FBB2B3F-CB7B-A775-94B6-F0F20036EC51}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Hawk\ECS">
       <UniqueIdentifier>{7146C366-5DA9-520B-062F-8BC1F2701E8E}</UniqueIdentifier>
     </Filter>
@@ -21,6 +24,9 @@
     </Filter>
     <Filter Include="src\Hawk\ImGui">
       <UniqueIdentifier>{11ED0D25-FDBA-012B-E64E-7251D2BBDD8F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Hawk\Math">
+      <UniqueIdentifier>{E0FB303F-4CBC-AC75-15F7-F5F28176F151}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Hawk\Renderer">
       <UniqueIdentifier>{2D0630E8-991C-2E7E-E293-B99F4EE9FE05}</UniqueIdentifier>
@@ -61,15 +67,48 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\Core\Application.h">
-      <Filter>src\Hawk</Filter>
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\Camera.h">
+      <Filter>src\Hawk\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\Core\Core.h">
-      <Filter>src\Hawk</Filter>
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\EntryPoint.h">
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\Input.h">
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\KeyCodes.h">
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\Layer.h">
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\LayerStack.h">
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\Log.h">
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\MouseCodes.h">
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\Timestep.h">
+      <Filter>src\Hawk\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\Core\Window.h">
+      <Filter>src\Hawk\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\ECS\Components\ComponentArray.h">
       <Filter>src\Hawk\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\ECS\Components\ComponentManager.h">
+      <Filter>src\Hawk\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Components\Mesh.h">
       <Filter>src\Hawk\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\ECS\Components\Sprite.h">
@@ -84,6 +123,9 @@
     <ClInclude Include="src\Hawk\ECS\EntityManager.h">
       <Filter>src\Hawk\ECS</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Systems\MeshRendererSystem.h">
+      <Filter>src\Hawk\ECS\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hawk\ECS\Systems\SpriteRendererSystem.h">
       <Filter>src\Hawk\ECS\Systems</Filter>
     </ClInclude>
@@ -92,9 +134,6 @@
     </ClInclude>
     <ClInclude Include="src\Hawk\ECS\Systems\SystemManager.h">
       <Filter>src\Hawk\ECS\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hawk\Core\EntryPoint.h">
-      <Filter>src\Hawk</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\Events\ApplicationEvent.h">
       <Filter>src\Hawk\Events</Filter>
@@ -111,23 +150,8 @@
     <ClInclude Include="src\Hawk\ImGui\ImGUILayer.h">
       <Filter>src\Hawk\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hawk\Core\Input.h">
-      <Filter>src\Hawk</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hawk\Core\KeyCodes.h">
-      <Filter>src\Hawk</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hawk\Core\Layer.h">
-      <Filter>src\Hawk</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hawk\Core\LayerStack.h">
-      <Filter>src\Hawk</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hawk\Core\Log.h">
-      <Filter>src\Hawk</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hawk\Core\MouseCodes.h">
-      <Filter>src\Hawk</Filter>
+    <ClInclude Include="src\Hawk\Math\Quaternion.h">
+      <Filter>src\Hawk\Math</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\Renderer\GraphicsContext.h">
       <Filter>src\Hawk\Renderer</Filter>
@@ -135,8 +159,8 @@
     <ClInclude Include="src\Hawk\Renderer\Model.h">
       <Filter>src\Hawk\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hawk\Core\Window.h">
-      <Filter>src\Hawk</Filter>
+    <ClInclude Include="src\Hawk\Renderer\Renderer.h">
+      <Filter>src\Hawk\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Vulkan\VulkanContext.h">
       <Filter>src\Platform\Vulkan</Filter>
@@ -1410,16 +1434,25 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hawk\Math\Quaternion.h" />
-    <ClInclude Include="src\Hawk\Core\Timestep.h" />
-    <ClInclude Include="src\Hawk\ECS\Systems\MeshRendererSystem.h" />
-    <ClInclude Include="src\Hawk\ECS\Components\Mesh.h" />
-    <ClInclude Include="src\Hawk\Core\Camera.h" />
-    <ClInclude Include="src\Hawk\Renderer\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hawk\Core\Application.cpp">
-      <Filter>src\Hawk</Filter>
+      <Filter>src\Hawk\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\Core\Camera.cpp">
+      <Filter>src\Hawk\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\Core\Layer.cpp">
+      <Filter>src\Hawk\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\Core\LayerStack.cpp">
+      <Filter>src\Hawk\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\Core\Log.cpp">
+      <Filter>src\Hawk\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\ECS\Systems\MeshRendererSystem.cpp">
+      <Filter>src\Hawk\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Hawk\ECS\Systems\SpriteRendererSystem.cpp">
       <Filter>src\Hawk\ECS\Systems</Filter>
@@ -1430,14 +1463,8 @@
     <ClCompile Include="src\Hawk\ImGui\ImGUILayer.cpp">
       <Filter>src\Hawk\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hawk\Core\Layer.cpp">
-      <Filter>src\Hawk</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hawk\Core\LayerStack.cpp">
-      <Filter>src\Hawk</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hawk\Core\Log.cpp">
-      <Filter>src\Hawk</Filter>
+    <ClCompile Include="src\Hawk\Math\Quaternion.cpp">
+      <Filter>src\Hawk\Math</Filter>
     </ClCompile>
     <ClCompile Include="src\Hawk\Renderer\Model.cpp">
       <Filter>src\Hawk\Renderer</Filter>
@@ -1466,8 +1493,5 @@
     <ClCompile Include="src\hwkPrecompiledHeader.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hawk\Math\Quaternion.cpp" />
-    <ClCompile Include="src\Hawk\ECS\Systems\MeshRendererSystem.cpp" />
-    <ClCompile Include="src\Hawk\Core\Camera.cpp" />
   </ItemGroup>
 </Project>

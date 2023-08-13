@@ -13,21 +13,21 @@ public:
 		RegisterComponents();
 		RegisterSystems();
 
+		_model = Hawk::Model::createModelFromFile(*Hawk::VulkanRenderer::GetContext(), "C:\\EngineDev\\Hawk\\Hawk\\Models\\tree.gltf");
 
-		_model = createCubeModel(*Hawk::VulkanRenderer::GetContext(), { 0.f,0.f,0.f });
+		//_model = createCubeModel(*Hawk::VulkanRenderer::GetContext(), { 0.f,0.f,0.f });
 
 		Hawk::Entity entity;
 		entity = _ecsManager->createEntity();
 		Hawk::Mesh mesh;
 
-		mesh.transform.position = { -1.f ,0.f, 2.f };
+		mesh.transform.position = { 0.f ,0.f, 2.f };
 
 		mesh.model = _model;
 		mesh.transform.scale = { .75f, .75f, .75f };
 		mesh.transform.rotation = { 45.f, 45.f, 0.f };
 
 		_ecsManager->addComponent<Hawk::Mesh>(entity, mesh);
-
 
 	}
 

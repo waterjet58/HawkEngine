@@ -10,3 +10,6 @@
 [submodule "Hawk/vendor/imgui"]
 	path = Hawk/vendor/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "Hawk/vendor/tinygltf"]
+	path = Hawk/vendor/tinygltf
+	url = https://github.com/syoyo/tinygltf.git

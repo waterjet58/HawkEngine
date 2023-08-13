@@ -8,13 +8,18 @@
 
 #include "Hawk/Core/Log.h"
 
+
+
 namespace Hawk {
 	class Model {
+
 	public:
 
 		struct Vertex {
 			glm::vec3 position;
 			glm::vec3 color;
+			glm::vec3 normal{};
+			glm::vec2 uv{};
 
 			static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
 			static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
@@ -24,6 +29,8 @@ namespace Hawk {
 		struct Builder {
 			std::vector<Vertex> vertices{};
 			std::vector<uint32_t> indices{};
+
+			void loadModel(const std::string &filePath);
 		};
 
 		Model(VulkanContext &context, const Model::Builder &builder);
@@ -34,7 +41,7 @@ namespace Hawk {
 
 		void bind(VkCommandBuffer commandBuffer);
 		void draw(VkCommandBuffer commandBuffer);
-
+		static std::unique_ptr<Model> createModelFromFile(VulkanContext& context, const std::string& filePath);
 	private:
 		void createVertexBuffers(const std::vector<Vertex>& vertices);
 		void createIndexBuffers(const std::vector<uint32_t>& indices);

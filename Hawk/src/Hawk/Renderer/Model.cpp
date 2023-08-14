@@ -148,17 +148,12 @@ namespace Hawk {
 
 	std::vector<VkVertexInputAttributeDescription> Model::Vertex::getAttributeDescriptions()
 	{
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(2);
-
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, position);
-
-		attributeDescriptions[1].binding = 0;
-		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, color);
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
+										//location, binding, format, offset
+		attributeDescriptions.push_back({ 0 , 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position) });
+		attributeDescriptions.push_back({ 1 , 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)	});
+		attributeDescriptions.push_back({ 2 , 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)	});
+		attributeDescriptions.push_back({ 3 , 0, VK_FORMAT_R32G32_SFLOAT,	 offsetof(Vertex, uv)		});
 
 		return attributeDescriptions;
 	}
@@ -192,53 +187,78 @@ namespace Hawk {
 		int x = 0;
 		for (const auto& mesh : model.meshes)
 		{
+
 			for (const auto& primitive : mesh.primitives)
 			{
-				x++;
-				auto count = model.accessors.at(primitive.attributes.at("POSITION")).count;
-				HWK_CORE_INFO("Mesh {0}: {1} vertices", x, count);
-				for (size_t i = 0; i < count; ++i)
-				{
-					Vertex vertex{};
 
-					{ //Vertex Positions
-						const auto& index = primitive.attributes.at("POSITION");
-						const auto& accessor = model.accessors.at(index);
-						const auto& bufferView = model.bufferViews.at(accessor.bufferView);
-						const auto& buffer = model.buffers.at(bufferView.buffer); // vector<unsigned char>
+				{ //Vertex Positions
+					const auto& posIndex = primitive.attributes.at("POSITION");
+					const auto& normIndex = primitive.attributes.at("NORMAL");
+					const auto& uvIndex = primitive.attributes.at("TEXCOORD_0");
 
-						const float* positions = reinterpret_cast<const float*>(&buffer.data[bufferView.byteOffset + accessor.byteOffset]);
+					auto& accessor = model.accessors.at(posIndex);
+					auto& bufferView = model.bufferViews.at(accessor.bufferView);
+					auto& buffer = model.buffers.at(bufferView.buffer); // vector<unsigned char>
+
+					const float* vertPositions = reinterpret_cast<const float*>(&buffer.data[bufferView.byteOffset + accessor.byteOffset]);
+
+					for (size_t i = 0; i < accessor.count; i++)
+					{
+						Vertex vertex{};
 
 						vertex.position =
 						{
-							positions[i * 3 + 0],
-							positions[i * 3 + 1],
-							positions[i * 3 + 2]
+							vertPositions[(i * 3) + 0],
+							vertPositions[(i * 3) + 1],
+							vertPositions[(i * 3) + 2]
 						};
 
-					}
-
-
-					{ //Vertex Normals
-						const auto& index = primitive.attributes.at("NORMAL");
-						const auto& accessor = model.accessors.at(index);
-						const auto& bufferView = model.bufferViews.at(accessor.bufferView);
-						const auto& buffer = model.buffers.at(bufferView.buffer); // vector<unsigned char>
+						accessor = model.accessors.at(normIndex);
+						bufferView = model.bufferViews.at(accessor.bufferView);
+						buffer = model.buffers.at(bufferView.buffer); // vector<unsigned char>
 
 						const float* normals = reinterpret_cast<const float*>(&buffer.data[bufferView.byteOffset + accessor.byteOffset]);
 
 						vertex.normal =
 						{
-							normals[i * 3 + 0],
-							normals[i * 3 + 1],
-							normals[i * 3 + 2]
+							normals[(i * 3) + 0],
+							normals[(i * 3) + 1],
+							normals[(i * 3) + 2]
 						};
 
+						accessor = model.accessors.at(uvIndex);
+						bufferView = model.bufferViews.at(accessor.bufferView);
+						buffer = model.buffers.at(bufferView.buffer); // vector<unsigned char>
+
+						const float* uvCoords = reinterpret_cast<const float*>(&buffer.data[bufferView.byteOffset + accessor.byteOffset]);
+
+						vertex.uv =
+						{
+							uvCoords[(i * 2) + 0],
+							uvCoords[(i * 2) + 1]
+						};
+
+						vertex.color = { .7f, .7f, .7f };
+
+						vertices.push_back(vertex);
 					}
 
-					vertices.push_back(vertex);
 				}
 				
+
+				{ //Vertex Positions
+					const auto& accessor = model.accessors[primitive.indices];
+					const auto& bufferView = model.bufferViews.at(accessor.bufferView);
+					const auto& buffer = model.buffers.at(bufferView.buffer); // vector<unsigned char>
+
+					const uint16_t* positions = reinterpret_cast<const uint16_t*>(&buffer.data[bufferView.byteOffset + accessor.byteOffset]);
+
+					for (size_t i = 0; i < accessor.count; i++)
+					{
+						indices.push_back(positions[i]);
+					}
+
+				}
 			}
 		}
 

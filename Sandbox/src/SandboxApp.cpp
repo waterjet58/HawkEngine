@@ -13,8 +13,7 @@ public:
 		RegisterComponents();
 		RegisterSystems();
 
-		_model = Hawk::Model::createModelFromFile(*Hawk::VulkanRenderer::GetContext(), "C:\\EngineDev\\Hawk\\Hawk\\Models\\tree.gltf");
-
+		_model = Hawk::Model::createModelFromFile(*Hawk::VulkanRenderer::GetContext(), "C:\\EngineDev\\Hawk\\Hawk\\Models\\rock.gltf");
 		//_model = createCubeModel(*Hawk::VulkanRenderer::GetContext(), { 0.f,0.f,0.f });
 
 		Hawk::Entity entity;
@@ -24,8 +23,8 @@ public:
 		mesh.transform.position = { 0.f ,0.f, 2.f };
 
 		mesh.model = _model;
-		mesh.transform.scale = { .75f, .75f, .75f };
-		mesh.transform.rotation = { 45.f, 45.f, 0.f };
+		mesh.transform.scale = { 1.f, 1.f, 1.f }; //REMEMBER TO UNCHECK THE +Y UP WHEN EXPORTING TO GLTF FORM BECAUSE VULKAN RENDERS -Y UP
+		mesh.transform.rotation = { 0.f, 0.f, 180.f };
 
 		_ecsManager->addComponent<Hawk::Mesh>(entity, mesh);
 

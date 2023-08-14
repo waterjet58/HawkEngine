@@ -23,19 +23,13 @@ namespace Hawk {
 		for (auto const& entity : _entities)
 		{
 			auto& mesh = _manager->getComponent<Mesh>(entity);
-			if (entity == 0 || entity == 1)
-			{
-				mesh.transform.rotation.y -= (50.f * dt);
-				mesh.transform.rotation.x -= (50.f * dt);
-			}
-			else {
-				mesh.transform.rotation.y += (50.f * dt);
-				mesh.transform.rotation.x += (50.f * dt);
-			}
+			
+			mesh.transform.rotation.y += dt * 20.f;
 
 			MeshSimplePushConstantData push{};
-			push.color = mesh.color;
-			push.transform = projectionView * mesh.transform.mat4();
+			auto modelMatrix = mesh.transform.mat4();
+			push.transform = projectionView * modelMatrix;
+			push.modelMatrix = modelMatrix;
 
 			vkCmdPushConstants(
 				buffer,

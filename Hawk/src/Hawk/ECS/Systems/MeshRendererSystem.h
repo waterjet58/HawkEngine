@@ -16,6 +16,8 @@ namespace Hawk {
 
 		void Update(Timestep dt, FrameData& frameData);
 
+		void cleanup();
+
 		~MeshRendererSystem();
 	private:
 		std::shared_ptr<ECSManager> _manager;

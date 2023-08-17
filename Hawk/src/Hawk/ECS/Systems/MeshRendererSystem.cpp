@@ -32,7 +32,7 @@ namespace Hawk {
 		{
 			auto& mesh = _manager->getComponent<Mesh>(entity);
 			
-			mesh.transform.rotation.y -= dt * 10.f;
+			//mesh.transform.rotation.y -= dt * 10.f;
 
 			MeshSimplePushConstantData push{};
 			push.modelMatrix = mesh.transform.mat4();
@@ -86,8 +86,14 @@ namespace Hawk {
 
 	}
 
+	void MeshRendererSystem::cleanup()
+	{
+		_pipeline->cleanup();
+		vkDestroyPipelineLayout(_context->getDevice(), _pipelineLayout, _context->getAllocator());
+	}
+
 	MeshRendererSystem::~MeshRendererSystem()
 	{
-		vkDestroyPipelineLayout(_context->getDevice(), _pipelineLayout, _context->getAllocator());
+		
 	}
 }

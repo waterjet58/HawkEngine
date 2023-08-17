@@ -36,8 +36,6 @@ namespace Hawk {
 		_vulkanImGUI = new VulkanImGUI(static_cast<GLFWwindow*>(_window->GetNativeWindow()), _context);
 		_vulkanImGUI->initImGUI();
 
-		
-
 	}
 
 	Application::~Application() {}
@@ -67,6 +65,7 @@ namespace Hawk {
 		}
 
 
+
 		cleanup(); 
 
 	}
@@ -75,9 +74,12 @@ namespace Hawk {
 
 	void Application::cleanup()
 	{
+		vkDeviceWaitIdle(_context.getDevice());
+
+		VulkanRenderer::cleanup();
+
 		for (auto& layer : _layerStack)
 			layer->OnDetach();
-
 	}
 
 	void Application::PushLayer(Layer* layer)

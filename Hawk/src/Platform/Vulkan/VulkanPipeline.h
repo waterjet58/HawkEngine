@@ -28,6 +28,8 @@ namespace Hawk {
 		VulkanPipeline(VulkanContext& context, const std::string& vertFilePath, const std::string& fragFilePath, const PipelineConfigInfo info);
 		~VulkanPipeline();
 
+		void cleanup();
+
 		VulkanPipeline(const VulkanPipeline&) = delete;
 		void operator=(const VulkanPipeline&) = delete;
 

@@ -24,6 +24,11 @@ namespace Hawk {
 		freeCommandBuffers();
 	}
 
+	void VulkanRenderer::cleanup()
+	{
+		_swapChain->cleanup();
+	}
+
 	void VulkanRenderer::init(VulkanContext* context, Window* window) 
 	{
 		_context = context;

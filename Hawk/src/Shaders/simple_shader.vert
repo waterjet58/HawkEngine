@@ -9,7 +9,9 @@ layout(location = 0) out vec3 fragColor;
 
 layout(set = 0, binding = 0) uniform UniformBufferObject {
 	mat4 projectionViewMatrix;
-	vec3 directionToLight;
+	vec4 ambientLight;
+	vec3 lightPosition;
+	vec4 lightColor;
 } ubo;
 
 layout(push_constant) uniform Push{
@@ -17,14 +19,23 @@ layout(push_constant) uniform Push{
 	mat4 normalMatrix;
 } push;
 
-const float AMBIENT = 0.25;
-
 void main(){
-	gl_Position = ubo.projectionViewMatrix * push.modelMatrix * vec4(position, 1.0);
+	
+	vec4 positionInWorld = push.modelMatrix * vec4(position, 1.0);
+
+	gl_Position = ubo.projectionViewMatrix * positionInWorld;
 
 	vec3 normalWorldSpace = normalize(mat3(push.normalMatrix) * normal);
 
-	float lightIntensity = AMBIENT + max(dot(normalWorldSpace, ubo.directionToLight), 0);
+	vec3 directionToLight = ubo.lightPosition - positionInWorld.xyz;
 
-	fragColor = lightIntensity * color;
+	float attentuation = 1.0 / dot(directionToLight, directionToLight); //the length of the vector squared
+
+	vec3 lightColor = ubo.lightColor.xyz * ubo.lightColor.w * attentuation; //Scale the light color by its intensity and distance to the source
+	
+	vec3 ambientLight = ubo.ambientLight.xyz * ubo.ambientLight.w; //Scale the ambient color by its intensity
+	
+	vec3 diffuseLight = lightColor * max(dot(normalWorldSpace, normalize(directionToLight)), 0);
+
+	fragColor = (diffuseLight + ambientLight) * color;
 }

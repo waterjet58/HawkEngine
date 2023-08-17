@@ -19,6 +19,7 @@ namespace Hawk {
 	{
 	private:
 		VulkanContext _context{};
+
 		Window* _window{ Window::Create("HwkEngine", 1920, 1080, _context) };
 		ImGUILayer* _imGuiLayer;
 		VulkanImGUI* _vulkanImGUI;

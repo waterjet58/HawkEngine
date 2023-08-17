@@ -15,6 +15,11 @@ namespace Hawk {
 
 	VulkanPipeline::~VulkanPipeline()
 	{
+		
+	}
+
+	void VulkanPipeline::cleanup()
+	{
 		vkDestroyShaderModule(_context.getDevice(), _vertShaderModule, _context.getAllocator());
 		vkDestroyShaderModule(_context.getDevice(), _fragShaderModule, _context.getAllocator());
 		vkDestroyPipeline(_context.getDevice(), _graphicsPipeline, _context.getAllocator());

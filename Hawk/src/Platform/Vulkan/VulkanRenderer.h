@@ -15,7 +15,7 @@ namespace Hawk {
 		VulkanRenderer& operator=(const VulkanRenderer&) = delete;
 
 		static void init(VulkanContext* context, Window* window);
-
+		static void cleanup();
 		static VkCommandBuffer beginFrame();
 		static void endFrame();
 

@@ -12,6 +12,8 @@ public:
      VulkanSwapChain(VulkanContext *contextRef, VkExtent2D windowExtent, std::shared_ptr<VulkanSwapChain> previousSwapChain);
      ~VulkanSwapChain();
 
+     void cleanup();
+
      VulkanSwapChain(const VulkanSwapChain &) = delete;
      void operator=(const VulkanSwapChain &) = delete;
 

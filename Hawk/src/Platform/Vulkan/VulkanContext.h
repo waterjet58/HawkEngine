@@ -125,7 +125,6 @@ namespace Hawk {
 		VkDebugUtilsMessengerEXT	_DebugMessenger = VK_NULL_HANDLE;
 		VkCommandPool				_commandPool = VK_NULL_HANDLE;;
 
-		VkDevice _device = VK_NULL_HANDLE;
 		VkSurfaceKHR _Surface = VK_NULL_HANDLE;
 		VkQueue _graphicsQueue = VK_NULL_HANDLE;
 		VkQueue _presentQueue = VK_NULL_HANDLE;

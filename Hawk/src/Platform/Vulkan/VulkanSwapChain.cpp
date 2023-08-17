@@ -28,34 +28,39 @@ void VulkanSwapChain::init()
 }
 
 VulkanSwapChain::~VulkanSwapChain() {
-  for (auto imageView : swapChainImageViews) {
-    vkDestroyImageView(context->getDevice(), imageView, nullptr);
-  }
-  swapChainImageViews.clear();
+  
+}
 
-  if (swapChain != nullptr) {
-    vkDestroySwapchainKHR(context->getDevice(), swapChain, nullptr);
-    swapChain = nullptr;
-  }
+void VulkanSwapChain::cleanup()
+{
+    for (auto imageView : swapChainImageViews) {
+        vkDestroyImageView(context->getDevice(), imageView, nullptr);
+    }
+    swapChainImageViews.clear();
 
-  for (int i = 0; i < depthImages.size(); i++) {
-    vkDestroyImageView(context->getDevice(), depthImageViews[i], nullptr);
-    vkDestroyImage(context->getDevice(), depthImages[i], nullptr);
-    vkFreeMemory(context->getDevice(), depthImageMemorys[i], nullptr);
-  }
+    if (swapChain != nullptr) {
+        vkDestroySwapchainKHR(context->getDevice(), swapChain, nullptr);
+        swapChain = nullptr;
+    }
 
-  for (auto framebuffer : swapChainFramebuffers) {
-    vkDestroyFramebuffer(context->getDevice(), framebuffer, nullptr);
-  }
+    for (int i = 0; i < depthImages.size(); i++) {
+        vkDestroyImageView(context->getDevice(), depthImageViews[i], nullptr);
+        vkDestroyImage(context->getDevice(), depthImages[i], nullptr);
+        vkFreeMemory(context->getDevice(), depthImageMemorys[i], nullptr);
+    }
 
-  vkDestroyRenderPass(context->getDevice(), renderPass, nullptr);
+    for (auto framebuffer : swapChainFramebuffers) {
+        vkDestroyFramebuffer(context->getDevice(), framebuffer, nullptr);
+    }
 
-  // cleanup synchronization objects
-  for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-    vkDestroySemaphore(context->getDevice(), renderFinishedSemaphores[i], nullptr);
-    vkDestroySemaphore(context->getDevice(), imageAvailableSemaphores[i], nullptr);
-    vkDestroyFence(context->getDevice(), inFlightFences[i], nullptr);
-  }
+    vkDestroyRenderPass(context->getDevice(), renderPass, nullptr);
+
+    // cleanup synchronization objects
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroySemaphore(context->getDevice(), renderFinishedSemaphores[i], nullptr);
+        vkDestroySemaphore(context->getDevice(), imageAvailableSemaphores[i], nullptr);
+        vkDestroyFence(context->getDevice(), inFlightFences[i], nullptr);
+    }
 }
 
 VkResult VulkanSwapChain::acquireNextImage(uint32_t *imageIndex) {

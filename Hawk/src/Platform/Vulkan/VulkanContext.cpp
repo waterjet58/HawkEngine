@@ -55,7 +55,18 @@ namespace Hawk {
 
 	VulkanContext::VulkanContext(){}
 
-	VulkanContext::~VulkanContext() {}
+	VulkanContext::~VulkanContext() 
+	{
+		vkDestroyCommandPool(_Device, _commandPool, nullptr);
+		vkDestroyDevice(_Device, nullptr);
+
+		if (enableValidationLayers) {
+			DestroyDebugUtilsMessengerEXT(_Instance, _DebugMessenger, nullptr);
+		}
+
+		vkDestroySurfaceKHR(_Instance, _Surface, nullptr);
+		vkDestroyInstance(_Instance, nullptr);
+	}
 
 	void VulkanContext::check_vk_result(VkResult err)
 	{

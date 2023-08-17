@@ -8,8 +8,10 @@ class ExampleLayer : public Hawk::Layer
 
 	struct UniformBufferObject
 	{
-		alignas(16) glm::mat4 projectionView{1.f};
-		alignas(16) glm::vec3 lightDir = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
+		glm::mat4 projectionView{1.f};
+		glm::vec4 ambientLight{1.f, 1.f, 1.f, .02f}; // {R, G, B, Intensity}
+		glm::vec3 lightPos{1.f};
+		alignas(16) glm::vec4 lightColor{.1f, 1.f, .1f, .8f};
 	};
 
 public:
@@ -79,6 +81,9 @@ public:
 
 	}
 
+	bool left = false; 
+	float lightPosX = 1.f;
+
 	void Update(Hawk::Timestep timestep) override
 	{
 		frames++;
@@ -105,11 +110,23 @@ public:
 			//Update
 			UniformBufferObject ubo{};
 			ubo.projectionView = camera.getProjection() * camera.getView();
+
+			if (left)
+				lightPosX -= 1.f * timestep;
+			else if(!left)
+				lightPosX += 1.f * timestep;
+
+			if (lightPosX <= 0.f && left)
+				left = false;
+			else if (lightPosX >= 5.f && !left)
+				left = true;
+
+			ubo.lightPos.x = lightPosX;
+
 			uboBuffers[frameIndex]->writeToBuffer(&ubo);
 			uboBuffers[frameIndex]->flush();
 			
 			
-
 
 			//Render
 			Hawk::VulkanRenderer::beginSwapChainRenderPass(commandBuffer);
@@ -261,6 +278,11 @@ public:
 								12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21 };
 
 		return std::make_unique<Hawk::Model>(device, modelBuilder);
+	}
+
+	void OnDetach() //All cleanup
+	{
+		meshRenderer->cleanup();
 	}
 
 private:

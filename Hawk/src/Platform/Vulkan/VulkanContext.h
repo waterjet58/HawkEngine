@@ -108,6 +108,8 @@ namespace Hawk {
 
 		void setupDebugMessenger();
 
+		VkPhysicalDeviceProperties properties;
+
 	private:
 
 		GLFWwindow* _window;

@@ -17,14 +17,7 @@ namespace Hawk {
 
 	Model::~Model()
 	{
-		vkDestroyBuffer(_context.getDevice(), _vertexBuffer, _context.getAllocator());
-		vkFreeMemory(_context.getDevice(), _vertexBufferMemory, _context.getAllocator());
-
-		if (hasIndexBuffer)
-		{
-			vkDestroyBuffer(_context.getDevice(), _indexBuffer, _context.getAllocator());
-			vkFreeMemory(_context.getDevice(), _indexBufferMemory, _context.getAllocator());
-		}
+		
 	}
 
 	std::unique_ptr<Model> Model::createModelFromFile(VulkanContext& context, const std::string& filepath)
@@ -43,33 +36,27 @@ namespace Hawk {
 
 		VkDeviceSize bufferSize = sizeof(vertices[0]) * _vertexCount;
 
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingBufferMemory;
+		uint32_t vertexSize = sizeof(vertices[0]);
 
-		_context.createBuffer(
-			bufferSize,
-			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			stagingBuffer,
-			stagingBufferMemory);
+		BufferObject stagingBuffer
+		{
+		_context,
+		vertexSize,
+		_vertexCount,
+		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+		};
 
-		void* data;
-		vkMapMemory(_context.getDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
+		stagingBuffer.map();
+		stagingBuffer.writeToBuffer((void*)vertices.data());
 
-		memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
-		vkUnmapMemory(_context.getDevice(), stagingBufferMemory);
-
-		_context.createBuffer(
-			bufferSize,
+		vertexBuffer = std::make_unique<BufferObject>(
+			_context, vertexSize, _vertexCount,
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			_vertexBuffer,
-			_vertexBufferMemory);
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		_context.copyBuffer(stagingBuffer, _vertexBuffer, bufferSize);
+		_context.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 
-		vkDestroyBuffer(_context.getDevice(), stagingBuffer, _context.getAllocator());
-		vkFreeMemory(_context.getDevice(), stagingBufferMemory, _context.getAllocator());
 	}
 
 	void Model::createIndexBuffers(const std::vector<uint32_t>& indices)
@@ -82,46 +69,41 @@ namespace Hawk {
 
 		VkDeviceSize bufferSize = sizeof(indices[0]) * _indexCount;
 
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingBufferMemory;
+		uint32_t indexSize = sizeof(indices[0]);
 
-		_context.createBuffer(
-			bufferSize,
+		BufferObject stagingBuffer{
+			_context,
+			indexSize,
+			_indexCount,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			stagingBuffer,
-			stagingBufferMemory);
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+		};
 
-		void* data;
-		vkMapMemory(_context.getDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
+		stagingBuffer.map();
+		stagingBuffer.writeToBuffer((void*)indices.data());
 
-		memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
-		vkUnmapMemory(_context.getDevice(), stagingBufferMemory);
-
-		_context.createBuffer(
-			bufferSize,
+		indexBuffer = std::make_unique<BufferObject>(
+			_context,
+			indexSize,
+			_indexCount,
 			VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			_indexBuffer,
-			_indexBufferMemory);
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+		);
 
-		_context.copyBuffer(stagingBuffer, _indexBuffer, bufferSize);
-
-		vkDestroyBuffer(_context.getDevice(), stagingBuffer, _context.getAllocator());
-		vkFreeMemory(_context.getDevice(), stagingBufferMemory, _context.getAllocator());
+		_context.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 
 	}
 
 	void Model::bind(VkCommandBuffer commandBuffer)
 	{
-		VkBuffer buffers[] = { _vertexBuffer };
+		VkBuffer buffers[] = { vertexBuffer->getBuffer() };
 		VkDeviceSize offsets[] = { 0 };
 
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 
 		if (hasIndexBuffer)
 		{
-			vkCmdBindIndexBuffer(commandBuffer, _indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+			vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		}
 	}
 
@@ -238,7 +220,7 @@ namespace Hawk {
 							uvCoords[(i * 2) + 1]
 						};
 
-						vertex.color = { .7f, .7f, .7f };
+						vertex.color = { .8f, .8f, .8f };
 
 						vertices.push_back(vertex);
 					}

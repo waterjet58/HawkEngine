@@ -205,15 +205,16 @@ namespace Hawk {
 		int use_gpu = 0;
 		for (int i = 0; i < (int)gpu_count; i++)
 		{
-			VkPhysicalDeviceProperties properties;
 			vkGetPhysicalDeviceProperties(gpus[i], &properties);
 			if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
 			{
 				use_gpu = i;
+				vkGetPhysicalDeviceProperties(gpus[use_gpu], &properties);
+				_PhysicalDevice = gpus[use_gpu];
 				break;
 			}
 		}
-
+		
 		_PhysicalDevice = gpus[use_gpu];
 		free(gpus);
 	}

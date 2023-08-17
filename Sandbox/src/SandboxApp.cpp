@@ -5,28 +5,77 @@
 
 class ExampleLayer : public Hawk::Layer
 {
+
+	struct UniformBufferObject
+	{
+		alignas(16) glm::mat4 projectionView{1.f};
+		alignas(16) glm::vec3 lightDir = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
+	};
+
 public:
 	ExampleLayer() : Layer("Example") 
 	{
+
+		_context = Hawk::VulkanRenderer::GetContext();
+
+		descriptorPool = Hawk::DescriptorPool::Builder(*_context)
+			.setMaxSets(Hawk::VulkanSwapChain::MAX_FRAMES_IN_FLIGHT)
+			.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, Hawk::VulkanSwapChain::MAX_FRAMES_IN_FLIGHT)
+			.build();
+
+		descriptorSetLayout = Hawk::DescriptorSetLayout::Builder(*_context)
+			.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+			.build();
+
+		
+
+		for (int i = 0; i < uboBuffers.size(); i++)
+		{
+			uboBuffers[i] = std::make_unique<Hawk::BufferObject>(
+				*_context,
+				sizeof(UniformBufferObject),
+				Hawk::VulkanSwapChain::MAX_FRAMES_IN_FLIGHT,
+				VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+				_context->properties.limits.minUniformBufferOffsetAlignment);
+
+			uboBuffers[i]->map();
+		}
+
+		for (int i = 0; i < globalDescriptorSets.size(); i++)
+		{
+			auto bufferInfo = uboBuffers[i]->descriptorInfo();
+			Hawk::DescriptorWriter(*descriptorSetLayout, *descriptorPool)
+				.writeBuffer(0, &bufferInfo)
+				.build(globalDescriptorSets[i]);
+		}
+
+
 		_ecsManager = std::make_shared<Hawk::ECSManager>(); //Need to make a static instance to get for the windowsWindow
 		_ecsManager->init();
 		RegisterComponents();
 		RegisterSystems();
 
-		_model = Hawk::Model::createModelFromFile(*Hawk::VulkanRenderer::GetContext(), "C:\\EngineDev\\Hawk\\Hawk\\Models\\rock.gltf");
+
+		_model = Hawk::Model::createModelFromFile(*_context, "C:\\EngineDev\\Hawk\\Hawk\\Models\\lowpolyhuman.gltf");
 		//_model = createCubeModel(*Hawk::VulkanRenderer::GetContext(), { 0.f,0.f,0.f });
 
-		Hawk::Entity entity;
-		entity = _ecsManager->createEntity();
-		Hawk::Mesh mesh;
+		for (int i = 0; i < 20; i++)
+		{
+			Hawk::Entity entity;
+			entity = _ecsManager->createEntity();
+			Hawk::Mesh mesh;
 
-		mesh.transform.position = { 0.f ,0.f, 2.f };
+			mesh.transform.position = { 0.f + (i * 1.f) , .2f, 2.f };
+			mesh.model = _model;
+			mesh.transform.scale = { .55f, .55f, .55f };
+			mesh.transform.rotation = { 180.f, 0.f + (90.f * i), 0.f };
 
-		mesh.model = _model;
-		mesh.transform.scale = { 1.f, 1.f, 1.f }; //REMEMBER TO UNCHECK THE +Y UP WHEN EXPORTING TO GLTF FORM BECAUSE VULKAN RENDERS -Y UP
-		mesh.transform.rotation = { 0.f, 0.f, 180.f };
+			_ecsManager->addComponent<Hawk::Mesh>(entity, mesh);
+		}
 
-		_ecsManager->addComponent<Hawk::Mesh>(entity, mesh);
+
+
 
 	}
 
@@ -42,10 +91,31 @@ public:
 
 		if (auto commandBuffer = Hawk::VulkanRenderer::beginFrame())
 		{
+			int frameIndex = Hawk::VulkanRenderer::getFrameIndex();
+
+			Hawk::FrameData frameData //Setup frame data
+			{
+				frameIndex,
+				timestep,
+				commandBuffer,
+				camera,
+				globalDescriptorSets[frameIndex]
+			};
+
+			//Update
+			UniformBufferObject ubo{};
+			ubo.projectionView = camera.getProjection() * camera.getView();
+			uboBuffers[frameIndex]->writeToBuffer(&ubo);
+			uboBuffers[frameIndex]->flush();
+			
+			
+
+
+			//Render
 			Hawk::VulkanRenderer::beginSwapChainRenderPass(commandBuffer);
 
 			//System updates
-			meshRenderer->Update(timestep, commandBuffer, camera);
+			meshRenderer->Update(timestep, frameData);
 
 			//ImGUI draw Data
 			ImDrawData* draw_data = ImGui::GetDrawData();
@@ -138,7 +208,7 @@ public:
 			_ecsManager->setSystemSignature<Hawk::MeshRendererSystem>(signature);
 		}
 
-		meshRenderer->Init(_ecsManager, Hawk::VulkanRenderer::GetContext(), Hawk::VulkanRenderer::getSwapChainRenderPass());
+		meshRenderer->Init(_ecsManager, Hawk::VulkanRenderer::GetContext(), Hawk::VulkanRenderer::getSwapChainRenderPass(), descriptorSetLayout->getDescriptorSetLayout());
 		//MESH RENDERER////////////////////////////////////////////////////////////////
 
 
@@ -197,6 +267,12 @@ private:
 	std::shared_ptr<Hawk::ECSManager> _ecsManager;
 	std::shared_ptr<Hawk::Model> _model;
 	std::shared_ptr<Hawk::MeshRendererSystem> meshRenderer;
+	std::unique_ptr<Hawk::DescriptorPool> descriptorPool;
+	std::vector<VkDescriptorSet> globalDescriptorSets{Hawk::VulkanSwapChain::MAX_FRAMES_IN_FLIGHT};
+	std::vector<std::unique_ptr<Hawk::BufferObject>> uboBuffers{Hawk::VulkanSwapChain::MAX_FRAMES_IN_FLIGHT};
+	std::unique_ptr<Hawk::DescriptorSetLayout> descriptorSetLayout;
+	Hawk::VulkanContext* _context;
+	
 
 	float totalTime = 0.f;
 	float frameRate = 60.f;

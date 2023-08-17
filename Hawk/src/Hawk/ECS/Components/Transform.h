@@ -47,6 +47,26 @@ namespace Hawk
 			return transform;
 
 		}
+
+		glm::mat3 normalMatrix()
+		{
+			auto normalMat = glm::mat4{1.f}; //create a 4x4 matrice
+
+			auto invScale = 1.f / scale; //Inverse the scale
+
+			normalMat = glm::scale(normalMat, scale); //scale the matrix
+
+			Quaternion quat(rotation); //Create a quaternion from the rotations
+
+			glm::quat myQuat;
+
+			myQuat = glm::quat(quat.w, quat.x, quat.y, quat.z);
+
+			normalMat = normalMat * glm::toMat4(myQuat); //Apply the rotation
+
+
+			return normalMat;
+		}
 	};
 
 

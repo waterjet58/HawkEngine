@@ -15,6 +15,8 @@
 #include "Hawk/ECS/ECSManager.hpp"
 #include "Hawk/Renderer/Model.h"
 #include "Hawk/ECS/Components/Mesh.h"
+#include "Hawk/Renderer/FrameData.h"
+#include "Platform/Vulkan/VulkanDescriptors.h"
 
 // --Entry Point--
 #include "Hawk/Core/EntryPoint.h"

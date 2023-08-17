@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Platform/Vulkan/VulkanContext.h"
+#include "Platform/Vulkan/BufferObject.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -48,13 +49,11 @@ namespace Hawk {
 
 		VulkanContext& _context;
 
-		VkBuffer _vertexBuffer;
-		VkDeviceMemory _vertexBufferMemory;
+		std::unique_ptr<BufferObject> vertexBuffer;
 		uint32_t _vertexCount;
 
 		bool hasIndexBuffer = false;
-		VkBuffer _indexBuffer;
-		VkDeviceMemory _indexBufferMemory;
+		std::unique_ptr<BufferObject> indexBuffer;
 		uint32_t _indexCount;
 	};
 

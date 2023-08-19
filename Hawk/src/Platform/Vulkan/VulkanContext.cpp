@@ -87,10 +87,7 @@ namespace Hawk {
 		selectGraphicsQueue();
 		createLogicalDevice();
 		createCommandPool();
-		//createDescriptorPool();
-		VkPhysicalDeviceProperties physicalDevProps;
-		vkGetPhysicalDeviceProperties(_PhysicalDevice, &physicalDevProps);
-		HWK_CORE_INFO("GPU Set: {0}", physicalDevProps.deviceName);
+		
 
 	}
 

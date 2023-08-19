@@ -5,7 +5,10 @@
 namespace Hawk {
 
 	struct PipelineConfigInfo {
+		
 
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
+		std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
 		VkPipelineViewportStateCreateInfo viewportInfo;
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 		VkPipelineRasterizationStateCreateInfo rasterizationInfo;
@@ -36,6 +39,7 @@ namespace Hawk {
 		void bind(VkCommandBuffer commandBuffer);
 
 		static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
+		static void enableAlphaBlending(PipelineConfigInfo& configInfo);
 
 	private:
 		static std::vector<char> readFile(const std::string& filePath);

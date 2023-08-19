@@ -6,13 +6,7 @@
 class ExampleLayer : public Hawk::Layer
 {
 
-	struct UniformBufferObject
-	{
-		glm::mat4 projectionView{1.f};
-		glm::vec4 ambientLight{1.f, 1.f, 1.f, .02f}; // {R, G, B, Intensity}
-		glm::vec3 lightPos{1.f};
-		alignas(16) glm::vec4 lightColor{.1f, 1.f, .1f, .8f};
-	};
+	
 
 public:
 	ExampleLayer() : Layer("Example") 
@@ -26,7 +20,7 @@ public:
 			.build();
 
 		descriptorSetLayout = Hawk::DescriptorSetLayout::Builder(*_context)
-			.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+			.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
 			.build();
 
 		
@@ -35,7 +29,7 @@ public:
 		{
 			uboBuffers[i] = std::make_unique<Hawk::BufferObject>(
 				*_context,
-				sizeof(UniformBufferObject),
+				sizeof(Hawk::GlobalUBO),
 				Hawk::VulkanSwapChain::MAX_FRAMES_IN_FLIGHT,
 				VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
@@ -59,7 +53,7 @@ public:
 		RegisterSystems();
 
 
-		_model = Hawk::Model::createModelFromFile(*_context, "C:\\EngineDev\\Hawk\\Hawk\\Models\\lowpolyhuman.gltf");
+		_model = Hawk::Model::createModelFromFile(*_context, "C:\\EngineDev\\Hawk\\Hawk\\src\\Models\\rock.gltf");
 		//_model = createCubeModel(*Hawk::VulkanRenderer::GetContext(), { 0.f,0.f,0.f });
 
 		for (int i = 0; i < 20; i++)
@@ -68,13 +62,19 @@ public:
 			entity = _ecsManager->createEntity();
 			Hawk::Mesh mesh;
 
-			mesh.transform.position = { 0.f + (i * 1.f) , .2f, 2.f };
+			mesh.transform.position = { 0.f + (i * 1.f) , -.5f + (entity * .1f), 2.f};
 			mesh.model = _model;
 			mesh.transform.scale = { .55f, .55f, .55f };
 			mesh.transform.rotation = { 180.f, 0.f + (90.f * i), 0.f };
 
 			_ecsManager->addComponent<Hawk::Mesh>(entity, mesh);
 		}
+
+		Hawk::Entity entity;
+		entity = _ecsManager->createEntity();
+		Hawk::Billboard billboard;
+
+		_ecsManager->addComponent<Hawk::Billboard>(entity, billboard);
 
 
 
@@ -108,8 +108,10 @@ public:
 			};
 
 			//Update
-			UniformBufferObject ubo{};
-			ubo.projectionView = camera.getProjection() * camera.getView();
+			Hawk::GlobalUBO ubo{};
+			ubo.projection = camera.getProjection(); //Just the projection
+			ubo.view = camera.getView(); //Just the view
+			ubo.projectionView = camera.getProjection() * camera.getView(); //ProjectionView for less matrix mult if needed
 
 			if (left)
 				lightPosX -= 1.f * timestep;
@@ -133,6 +135,9 @@ public:
 
 			//System updates
 			meshRenderer->Update(timestep, frameData);
+			billboardSystem->Update(timestep, frameData);
+			pointLightSystem->Update(timestep, frameData);
+			editorGridSystem->Update(timestep, frameData);
 
 			//ImGUI draw Data
 			ImDrawData* draw_data = ImGui::GetDrawData();
@@ -171,6 +176,8 @@ public:
 	{
 		_ecsManager->registerComponent<Hawk::Transform3D>();
 		_ecsManager->registerComponent<Hawk::Mesh>();
+		_ecsManager->registerComponent<Hawk::Billboard>();
+		_ecsManager->registerComponent<Hawk::PointLight>();
 	}
 
 	void cameraMovement(Hawk::Timestep timestep)
@@ -228,6 +235,37 @@ public:
 		meshRenderer->Init(_ecsManager, Hawk::VulkanRenderer::GetContext(), Hawk::VulkanRenderer::getSwapChainRenderPass(), descriptorSetLayout->getDescriptorSetLayout());
 		//MESH RENDERER////////////////////////////////////////////////////////////////
 
+		//BILLBOARD RENDERER////////////////////////////////////////////////////////////////
+		billboardSystem = _ecsManager->registerSystem<Hawk::BillboardSystem>();
+		{
+			Hawk::Signature signature;
+			signature.set(_ecsManager->getComponentType<Hawk::Billboard>());
+			//signature.set(_ecsManager->getComponentType<Transform3D>());
+			_ecsManager->setSystemSignature<Hawk::BillboardSystem>(signature);
+		}
+
+		billboardSystem->Init(_ecsManager, Hawk::VulkanRenderer::GetContext(), Hawk::VulkanRenderer::getSwapChainRenderPass(), descriptorSetLayout->getDescriptorSetLayout());
+		//BILLBOARD RENDERER////////////////////////////////////////////////////////////////
+
+		//BILLBOARD RENDERER////////////////////////////////////////////////////////////////
+		pointLightSystem = _ecsManager->registerSystem<Hawk::PointLightSystem>();
+		{
+			Hawk::Signature signature;
+			signature.set(_ecsManager->getComponentType<Hawk::PointLight>());
+			_ecsManager->setSystemSignature<Hawk::PointLightSystem>(signature);
+		}
+
+		pointLightSystem->Init(_ecsManager, Hawk::VulkanRenderer::GetContext(), Hawk::VulkanRenderer::getSwapChainRenderPass(), descriptorSetLayout->getDescriptorSetLayout());
+		//BILLBOARD RENDERER////////////////////////////////////////////////////////////////
+
+		//EDITOR GRID RENDERER////////////////////////////////////////////////////////////////
+		editorGridSystem = _ecsManager->registerSystem<Hawk::EditorGridSystem>();
+		{
+			
+		}
+
+		editorGridSystem->Init(_ecsManager, Hawk::VulkanRenderer::GetContext(), Hawk::VulkanRenderer::getSwapChainRenderPass(), descriptorSetLayout->getDescriptorSetLayout());
+		//EDITOR GRID RENDERER////////////////////////////////////////////////////////////////
 
 	}
 
@@ -289,6 +327,9 @@ private:
 	std::shared_ptr<Hawk::ECSManager> _ecsManager;
 	std::shared_ptr<Hawk::Model> _model;
 	std::shared_ptr<Hawk::MeshRendererSystem> meshRenderer;
+	std::shared_ptr<Hawk::BillboardSystem> billboardSystem;
+	std::shared_ptr<Hawk::EditorGridSystem> editorGridSystem;
+	std::shared_ptr<Hawk::PointLightSystem> pointLightSystem;
 	std::unique_ptr<Hawk::DescriptorPool> descriptorPool;
 	std::vector<VkDescriptorSet> globalDescriptorSets{Hawk::VulkanSwapChain::MAX_FRAMES_IN_FLIGHT};
 	std::vector<std::unique_ptr<Hawk::BufferObject>> uboBuffers{Hawk::VulkanSwapChain::MAX_FRAMES_IN_FLIGHT};

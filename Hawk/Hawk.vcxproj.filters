@@ -102,6 +102,9 @@
     <ClInclude Include="src\Hawk\Core\Window.h">
       <Filter>src\Hawk\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Components\Billboard.h">
+      <Filter>src\Hawk\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hawk\ECS\Components\ComponentArray.h">
       <Filter>src\Hawk\ECS\Components</Filter>
     </ClInclude>
@@ -122,6 +125,12 @@
     </ClInclude>
     <ClInclude Include="src\Hawk\ECS\EntityManager.h">
       <Filter>src\Hawk\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Systems\BillboardSystem.h">
+      <Filter>src\Hawk\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Systems\EditorGridSystem.h">
+      <Filter>src\Hawk\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Hawk\ECS\Systems\MeshRendererSystem.h">
       <Filter>src\Hawk\ECS\Systems</Filter>
@@ -1443,6 +1452,8 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hawk\ECS\Components\PointLight.h" />
+    <ClInclude Include="src\Hawk\ECS\Systems\PointLightSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hawk\Core\Application.cpp">
@@ -1459,6 +1470,12 @@
     </ClCompile>
     <ClCompile Include="src\Hawk\Core\Log.cpp">
       <Filter>src\Hawk\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\ECS\Systems\BillboardSystem.cpp">
+      <Filter>src\Hawk\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hawk\ECS\Systems\EditorGridSystem.cpp">
+      <Filter>src\Hawk\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Hawk\ECS\Systems\MeshRendererSystem.cpp">
       <Filter>src\Hawk\ECS\Systems</Filter>
@@ -1508,5 +1525,6 @@
     <ClCompile Include="src\hwkPrecompiledHeader.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hawk\ECS\Systems\PointLightSystem.cpp" />
   </ItemGroup>
 </Project>

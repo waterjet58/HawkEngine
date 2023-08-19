@@ -56,6 +56,7 @@ project "Hawk"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/src/Shaders",
+		"%{prj.name}/src/Models",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludedDirectories.GLFW}",
 		"%{IncludedDirectories.imgui}",
